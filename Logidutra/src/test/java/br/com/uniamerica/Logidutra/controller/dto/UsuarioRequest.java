@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.dto;
+package br.com.uniamerica.Logidutra.controller.dto;
 
 public record UsuarioRequest(
         long id,
@@ -7,5 +7,7 @@ public record UsuarioRequest(
         Integer idade,
         Boolean perm
 ) {
+
+
 
 }

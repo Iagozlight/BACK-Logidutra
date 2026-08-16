@@ -2,6 +2,7 @@ package br.com.uniamerica.Logidutra.controller.dto;
 
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 //@NotBlank é uma validação, ele bloqueia nulls, ""vazios, e "    " espaços vazios.
 
@@ -11,9 +12,8 @@ public record UsuarioResponse(
         String nome,
         @NotBlank(message = "a senha e obrigatorio")
         String senha,
-        @NotBlank(message = "a idade e obrigatorio")
+        @NotNull
         Integer idade,
-        @NotBlank(message = "permissao obrigatorio")
         Boolean perm
 ) {
 

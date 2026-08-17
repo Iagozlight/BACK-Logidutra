@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.controller.Veiculo;
+package br.com.uniamerica.Logidutra.controller;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.uniamerica.Logidutra.dto.veiculos.VeiculoRequest;
-import br.com.uniamerica.Logidutra.dto.veiculos.VeiculoResponse;
+import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
+import br.com.uniamerica.Logidutra.controller.dto.VeiculoResponse;
 import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.service.VeiculoService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/veiculo")
+@RequestMapping("/api/logidutra/veiculo")
 @AllArgsConstructor
 public class VeiculoController {
 

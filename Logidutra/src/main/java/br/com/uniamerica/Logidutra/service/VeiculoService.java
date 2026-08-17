@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 
-import br.com.uniamerica.Logidutra.dto.veiculos.VeiculoRequest;
+import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
 import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
 import lombok.AllArgsConstructor;

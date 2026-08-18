@@ -85,9 +85,9 @@ public class UsuarioController {
     public ResponseEntity deletar(@PathVariable long id) {
         try {
             this.usuarioService.deletarPorId(id);
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

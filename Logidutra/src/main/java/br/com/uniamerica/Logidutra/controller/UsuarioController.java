@@ -58,7 +58,7 @@ public class UsuarioController {
 
     @PutMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizar(
-            @PathVariable long id, @RequestBody UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = usuarioService.atualizar(id, usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
@@ -71,7 +71,7 @@ public class UsuarioController {
 
     @PatchMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizarParcial(
-            @PathVariable long id, @RequestBody UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);

@@ -21,7 +21,6 @@ public class VeiculoService {
         
         Pattern pattern = Pattern.compile(regexPlaca);
         Matcher matcher = pattern.matcher(placa);
-
         return matcher.find();
     }
 
@@ -56,6 +55,8 @@ public class VeiculoService {
 
         veiculo.setMarca(veiculoRequest.marca());
         veiculo.setModelo(veiculoRequest.modelo());
+
+        if(!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException();
         veiculo.setPlaca(veiculoRequest.placa());
 
         veiculo = veiculoRepository.save(veiculo);
@@ -68,7 +69,10 @@ public class VeiculoService {
 
         if(veiculoRequest.marca() != null) veiculo.setMarca(veiculoRequest.marca());
         if(veiculoRequest.modelo() != null) veiculo.setModelo(veiculoRequest.modelo());
-        if(veiculoRequest.placa() != null) veiculo.setPlaca(veiculoRequest.placa());
+        if(veiculoRequest.placa() != null){
+            if(!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException();
+            veiculo.setPlaca(veiculoRequest.placa());
+        }
 
         veiculo = veiculoRepository.save(veiculo);
 

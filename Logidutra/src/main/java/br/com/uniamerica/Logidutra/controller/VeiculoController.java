@@ -73,9 +73,11 @@ public class VeiculoController {
         try{
             VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
-        }
+        }catch(IllegalArgumentException e){
+        return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+    }
         catch(NoSuchElementException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<VeiculoResponse>(HttpStatus.NO_CONTENT);
         }
         catch(Exception e){
             return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
@@ -87,6 +89,8 @@ public class VeiculoController {
         try{
             VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_REQUEST);
         }
         catch(NoSuchElementException e){
             return new ResponseEntity<VeiculoResponse>(HttpStatus.NOT_FOUND);

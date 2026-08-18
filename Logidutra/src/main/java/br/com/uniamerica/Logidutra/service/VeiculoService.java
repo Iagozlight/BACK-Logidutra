@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
 
-import br.com.uniamerica.Logidutra.dto.veiculos.VeiculoRequest;
+import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
 import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,6 @@ public class VeiculoService {
         
         Pattern pattern = Pattern.compile(regexPlaca);
         Matcher matcher = pattern.matcher(placa);
-
         return matcher.find();
     }
 
@@ -56,6 +55,8 @@ public class VeiculoService {
 
         veiculo.setMarca(veiculoRequest.marca());
         veiculo.setModelo(veiculoRequest.modelo());
+
+        if(!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException();
         veiculo.setPlaca(veiculoRequest.placa());
 
         veiculo = veiculoRepository.save(veiculo);
@@ -68,7 +69,10 @@ public class VeiculoService {
 
         if(veiculoRequest.marca() != null) veiculo.setMarca(veiculoRequest.marca());
         if(veiculoRequest.modelo() != null) veiculo.setModelo(veiculoRequest.modelo());
-        if(veiculoRequest.placa() != null) veiculo.setPlaca(veiculoRequest.placa());
+        if(veiculoRequest.placa() != null){
+            if(!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException();
+            veiculo.setPlaca(veiculoRequest.placa());
+        }
 
         veiculo = veiculoRepository.save(veiculo);
 

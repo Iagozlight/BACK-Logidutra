@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.controller.Veiculo;
+package br.com.uniamerica.Logidutra.controller;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.uniamerica.Logidutra.dto.veiculos.VeiculoRequest;
-import br.com.uniamerica.Logidutra.dto.veiculos.VeiculoResponse;
+import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
+import br.com.uniamerica.Logidutra.controller.dto.VeiculoResponse;
 import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.service.VeiculoService;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/veiculo")
+@RequestMapping("/api/logidutra/veiculo")
 @AllArgsConstructor
 public class VeiculoController {
 
@@ -73,9 +73,11 @@ public class VeiculoController {
         try{
             VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
-        }
+        }catch(IllegalArgumentException e){
+        return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+    }
         catch(NoSuchElementException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<VeiculoResponse>(HttpStatus.NO_CONTENT);
         }
         catch(Exception e){
             return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
@@ -87,6 +89,8 @@ public class VeiculoController {
         try{
             VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
+        }catch(IllegalArgumentException e){
+            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_REQUEST);
         }
         catch(NoSuchElementException e){
             return new ResponseEntity<VeiculoResponse>(HttpStatus.NOT_FOUND);

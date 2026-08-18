@@ -19,7 +19,7 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping()
+    @PostMapping("/salvar")
     public ResponseEntity<UsuarioResponse> salvar(@RequestBody UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = this.usuarioService.salvar(usuarioRequest);
@@ -30,7 +30,7 @@ public class UsuarioController {
     }
 
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<UsuarioResponse>> listar() {
         try {
             List<UsuarioResponse> usuarioList =
@@ -45,7 +45,7 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/buscar/{id}")
     public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable long id) {
         try {
             Usuario usuario = this.usuarioService.buscarPorId(id);
@@ -56,9 +56,9 @@ public class UsuarioController {
 
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizar(
-            @PathVariable long id, @RequestBody UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = usuarioService.atualizar(id, usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
@@ -69,9 +69,9 @@ public class UsuarioController {
     }
 
 
-    @PatchMapping("{id}")
+    @PatchMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizarParcial(
-            @PathVariable long id, @RequestBody UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
@@ -81,13 +81,13 @@ public class UsuarioController {
     }
 
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/deletar/{id}")
     public ResponseEntity deletar(@PathVariable long id) {
         try {
             this.usuarioService.deletarPorId(id);
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

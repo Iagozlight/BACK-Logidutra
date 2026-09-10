@@ -1,23 +1,32 @@
 package br.com.uniamerica.Logidutra.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import javax.management.relation.Role;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
+@ToString
+@Table(name = "usuarios")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nome", nullable = false)
     private String nome;
+
+    @Column(name = "senha", nullable = false)
     private String senha;
+
+    @Column(name = "idade", nullable = false)
     private Integer idade;
-    private Boolean perm;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }

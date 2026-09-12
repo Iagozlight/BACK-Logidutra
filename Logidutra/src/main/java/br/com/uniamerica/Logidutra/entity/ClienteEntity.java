@@ -26,6 +26,6 @@ public class ClienteEntity {
     @Column(name = "telefone", nullable = false)
     private String telefone;
 
-    @Column(name = "cep")
+    @Column(name = "cep", nullable = false)
     private String cep;
 }

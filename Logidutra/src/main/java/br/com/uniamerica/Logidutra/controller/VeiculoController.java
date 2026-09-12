@@ -28,7 +28,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class VeiculoController {
 
-    private VeiculoService veiculoService;
+    private final VeiculoService veiculoService;
 
     @PostMapping("/salvar")
     public ResponseEntity<VeiculoResponse> salvar(@RequestBody VeiculoRequest veiculoRequest){

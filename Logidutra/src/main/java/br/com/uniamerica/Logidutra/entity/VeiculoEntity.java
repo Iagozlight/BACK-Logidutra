@@ -14,7 +14,7 @@ import lombok.Getter;
 @Getter
 @Setter
 @ToString
-
+@Table(name = "veiculos")
 public class VeiculoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

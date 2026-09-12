@@ -21,7 +21,7 @@ public class UsuarioService {
 
         usuario1.setNome(usuarioRequest.nome());
         usuario1.setIdade(usuarioRequest.idade());
-        usuario1.setPerm(usuarioRequest.perm());
+        usuario1.setRole(usuarioRequest.role());
         usuario1.setSenha(usuarioRequest.senha());
 
         return this.usuarioRepository.save(usuario1);
@@ -57,7 +57,7 @@ public class UsuarioService {
         usuario1.setNome(usuarioRequest.nome());
         usuario1.setSenha(usuarioRequest.senha());
         usuario1.setIdade(usuarioRequest.idade());
-        usuario1.setPerm(usuarioRequest.perm());
+        usuario1.setRole(usuarioRequest.role());
 
         return this.usuarioRepository.save(usuario1);
     }
@@ -68,7 +68,7 @@ public class UsuarioService {
         if(usuarioRequest.nome() != null) usuario.setNome(usuarioRequest.nome());
         if(usuarioRequest.senha() != null) usuario.setSenha(usuarioRequest.senha());
         if(usuarioRequest.idade() != null) usuario.setIdade(usuarioRequest.idade());
-        if(usuarioRequest.perm() != null) usuario.setPerm(usuarioRequest.perm());
+        if(usuarioRequest.role() != null) usuario.setRole(usuarioRequest.role());
 
         return this.usuarioRepository.save(usuario);
 

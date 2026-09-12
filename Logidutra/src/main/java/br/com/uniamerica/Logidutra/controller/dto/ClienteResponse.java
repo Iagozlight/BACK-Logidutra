@@ -22,6 +22,6 @@ public record ClienteResponse(
                 clienteEntity.getCpf(),
                 clienteEntity.getTelefone(),
                 clienteEntity.getCep()
-        )
+        );
     }
 }

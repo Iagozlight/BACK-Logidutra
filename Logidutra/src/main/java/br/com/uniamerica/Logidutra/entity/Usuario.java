@@ -1,10 +1,11 @@
 package br.com.uniamerica.Logidutra.entity;
 
 
+import br.com.uniamerica.Logidutra.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.management.relation.Role;
+
 
 @Entity
 @AllArgsConstructor

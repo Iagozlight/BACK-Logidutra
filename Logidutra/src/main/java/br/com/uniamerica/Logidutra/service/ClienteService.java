@@ -6,6 +6,7 @@ import br.com.uniamerica.Logidutra.entity.ClienteEntity;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -15,34 +16,18 @@ import java.util.List;
 @AllArgsConstructor
 public class ClienteService {
 
-    private final ClienteRepository clienteRepository;
+    @Autowired
+    private ClienteRepository clienteRepository;
 
-    public ClienteService (ClienteRepository clienteRepository) { this.clienteRepository = clienteRepository; }
+    public ClienteEntity salvar(ClienteRequest clienteRequest) {
+        ClienteEntity clienteEntity = new ClienteEntity();
 
-    public List<ClienteEntity> findAll() { return clienteRepository.findAll(); }
+        clienteEntity.setNome(clienteRequest.nome());
+        clienteEntity.setCpf(clienteRequest.cpf());
+        clienteEntity.setTelefone(clienteRequest.telefone());
+        clienteEntity.setCep(clienteRequest.cep());
 
-    public ClienteEntity findById(Long id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Carro não encontrado com o id: " + id));
-    }
-
-    public ClienteEntity salvar(ClienteEntity clienteEntity) { return clienteRepository.save(clienteEntity); }
-
-    public ClienteEntity atualizar(Long id, ClienteEntity clienteEntity) {
-        ClienteEntity clienteExistente = findById(id);
-
-        clienteExistente.setNome(clienteEntity.getNome());
-        clienteExistente.setCpf(clienteEntity.getCpf());
-        clienteExistente.setTelefone(clienteEntity.getTelefone());
-        clienteExistente.setCep(clienteEntity.getCep());
-
-        return clienteRepository.save(clienteExistente);
-    }
-
-    public void delete(Long id) {
-        ClienteEntity cliente = findById(id);
-
-        clienteRepository.delete(cliente);
+        return clienteRepository.save(clienteEntity);
     }
 
 }

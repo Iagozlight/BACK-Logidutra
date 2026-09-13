@@ -2,10 +2,10 @@ package br.com.uniamerica.Logidutra.controller.dto;
 
 import br.com.uniamerica.Logidutra.entity.Usuario;
 
+import br.com.uniamerica.Logidutra.enums.Role;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-import javax.management.relation.Role;
 
 //@NotBlank é uma validação, ele bloqueia nulls, ""vazios, e "    " espaços vazios.
 

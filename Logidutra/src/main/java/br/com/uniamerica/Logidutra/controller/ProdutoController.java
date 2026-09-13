@@ -82,4 +82,14 @@ public class ProdutoController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @DeleteMapping("/deletar/{id}")
+    public ResponseEntity deletar(@PathVariable long id){
+        try {
+            this.produtoService.deletarPorID(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
 }

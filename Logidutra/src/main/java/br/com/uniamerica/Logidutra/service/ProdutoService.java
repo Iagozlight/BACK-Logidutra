@@ -57,4 +57,9 @@ public class ProdutoService {
 
         return this.produtoRepository.save(produto);
     }
+
+    public void deletarPorID(long id){
+        this.buscarPorId(id);
+        this.produtoRepository.deleteById(id);
+    }
 }

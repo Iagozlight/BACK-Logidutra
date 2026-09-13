@@ -3,6 +3,7 @@ package br.com.uniamerica.Logidutra.service;
 import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
 import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
+import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,10 @@ public class ClienteService {
         clienteEntity.setCep(clienteRequest.cep());
 
         return clienteRepository.save(clienteEntity);
+    }
+
+    public List<ClienteEntity> listar(){
+        return this.clienteRepository.findAll();
     }
 
 }

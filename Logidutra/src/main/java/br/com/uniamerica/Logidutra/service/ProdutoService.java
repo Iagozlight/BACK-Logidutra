@@ -4,7 +4,9 @@ import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
 import br.com.uniamerica.Logidutra.entity.Produto;
 import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -25,5 +27,13 @@ public class ProdutoService {
 
     public List<Produto> listar(){
         return this.produtoRepository.findAll();
+    }
+
+    public Produto buscarPorId(long id){
+        return this.produtoRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                "Produto" + "Não encontrado")
+                );
     }
 }

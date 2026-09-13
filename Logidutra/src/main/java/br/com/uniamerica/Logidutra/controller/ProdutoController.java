@@ -2,7 +2,10 @@ package br.com.uniamerica.Logidutra.controller;
 
 import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
 import br.com.uniamerica.Logidutra.controller.dto.ProdutoResponse;
+import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
+import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.Logidutra.entity.Produto;
+import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import br.com.uniamerica.Logidutra.service.ProdutoService;
 import jakarta.validation.Valid;
@@ -55,5 +58,17 @@ public class ProdutoController {
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PutMapping("/atualizar")
+    public ResponseEntity<ProdutoResponse> atualizar(
+            @RequestParam(required = true) long id, @RequestBody ProdutoRequest produtoRequest) {
+        try {
+            Produto produto = produtoService.atualizar(id, produtoRequest);
+            return new ResponseEntity<ProdutoResponse>(ProdutoResponse.de(produto), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

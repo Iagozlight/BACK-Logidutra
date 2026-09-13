@@ -1,7 +1,9 @@
 package br.com.uniamerica.Logidutra.service;
 
 import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
+import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.entity.Produto;
+import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -35,5 +37,15 @@ public class ProdutoService {
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 "Produto" + "Não encontrado")
                 );
+    }
+
+    public Produto atualizar(long id, ProdutoRequest produtoRequest) {
+        Produto produtoatualizado = this.buscarPorId(id);
+
+        produtoatualizado.setNome(produtoRequest.nome());
+        produtoatualizado.setPreco(produtoRequest.preco());
+
+
+        return this.produtoRepository.save(produtoatualizado);
     }
 }

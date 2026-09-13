@@ -14,7 +14,7 @@ public class ProdutoService {
 
     public Produto salvar (ProdutoRequest produtoRequest){
         Produto produto1 = new Produto();
-        produto1.setId(produtoRequest.Id());
+        produto1.setId(produtoRequest.id());
         produto1.setNome(produtoRequest.nome());
         produto1.setPreco(produtoRequest.preco());
 

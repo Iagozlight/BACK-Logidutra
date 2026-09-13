@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record ProdutoResponse(
         long id,
-        @NotBlank(message = "Digite um nome para o produto")
         String nome,
-        @NotBlank(message = "Digite um valor maior que zero")
         Double preco
 ) {
 

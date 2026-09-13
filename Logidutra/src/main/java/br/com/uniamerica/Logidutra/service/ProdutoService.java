@@ -6,6 +6,8 @@ import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProdutoService {
@@ -17,8 +19,11 @@ public class ProdutoService {
         produto1.setId(produtoRequest.id());
         produto1.setNome(produtoRequest.nome());
         produto1.setPreco(produtoRequest.preco());
-
         return this.produtoRepository.save(produto1);
 
+    }
+
+    public List<Produto> listar(){
+        return this.produtoRepository.findAll();
     }
 }

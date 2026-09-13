@@ -48,4 +48,13 @@ public class ProdutoService {
 
         return this.produtoRepository.save(produtoatualizado);
     }
+
+    public Produto atualizarParcial (long id, ProdutoRequest produtoRequest){
+        Produto produto = this.buscarPorId(id);
+
+        if(produtoRequest.nome()!= null) produto.setNome(produtoRequest.nome());
+        if(produtoRequest.preco()!= null) produto.setPreco(produtoRequest.preco());
+
+        return this.produtoRepository.save(produto);
+    }
 }

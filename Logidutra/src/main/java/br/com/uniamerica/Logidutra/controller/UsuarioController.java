@@ -20,9 +20,10 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<UsuarioResponse> salvar(@RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> salvar(@RequestBody UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
         try {
-            Usuario usuario = this.usuarioService.salvar(usuarioRequest);
+            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
+            Usuario usuario = this.usuarioService.salvar(usuarioRequest, usuarioLogado);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

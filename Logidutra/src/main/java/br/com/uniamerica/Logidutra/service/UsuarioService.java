@@ -26,7 +26,9 @@ public class UsuarioService {
         }
     }
 
-    public Usuario salvar(UsuarioRequest usuarioRequest) {
+    public Usuario salvar(UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
+        this.validarRole(usuarioLogado, Role.ADMIN);
+
         Usuario usuario = new Usuario();
 
         usuario.setNome(usuarioRequest.nome());

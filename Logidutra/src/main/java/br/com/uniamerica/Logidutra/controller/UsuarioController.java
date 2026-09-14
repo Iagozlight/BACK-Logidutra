@@ -4,6 +4,7 @@ import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<UsuarioResponse> salvar(@RequestBody UsuarioRequest usuarioRequest) {
+    public ResponseEntity<UsuarioResponse> salvar( @RequestBody UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = this.usuarioService.salvar(usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.CREATED);

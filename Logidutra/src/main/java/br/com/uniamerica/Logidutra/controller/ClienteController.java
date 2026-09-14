@@ -39,7 +39,7 @@ public class ClienteController {
                             .map(ClienteResponse::de)
                             .toList();
 
-            return new ResponseEntity(clienteList, HttpStatus.OK);
+            return new ResponseEntity<>(clienteList, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

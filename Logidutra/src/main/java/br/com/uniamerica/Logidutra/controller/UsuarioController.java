@@ -76,15 +76,16 @@ public class UsuarioController {
             Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity deletar(@PathVariable long id) {
+    public ResponseEntity<Void> deletar(@PathVariable long id, @RequestParam Long usuarioLogadoId) {
         try {
-            this.usuarioService.deletarPorId(id);
+            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
+            usuarioService.deletarPorId(id, usuarioLogado);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

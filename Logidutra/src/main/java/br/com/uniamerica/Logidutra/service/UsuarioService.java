@@ -1,7 +1,9 @@
 package br.com.uniamerica.Logidutra.service;
 
+import br.com.uniamerica.Logidutra.controller.UsuarioController;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.enums.Role;
 import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,15 +18,23 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
+    public void validarRole(Usuario usuarioLogado, Role roleExigida) {
+        if (usuarioLogado.getRole() != roleExigida) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "Usuário não tem a permissão necessária para executar essa ação"
+            );
+        }
+    }
+
     public Usuario salvar(UsuarioRequest usuarioRequest) {
-        Usuario usuario1 = new Usuario();
+        Usuario usuario = new Usuario();
 
-        usuario1.setNome(usuarioRequest.nome());
-        usuario1.setIdade(usuarioRequest.idade());
-        usuario1.setRole(usuarioRequest.role());
-        usuario1.setSenha(usuarioRequest.senha());
+        usuario.setNome(usuarioRequest.nome());
+        usuario.setIdade(usuarioRequest.idade());
+        usuario.setRole(usuarioRequest.role());
+        usuario.setSenha(usuarioRequest.senha());
 
-        return this.usuarioRepository.save(usuario1);
+        return this.usuarioRepository.save(usuario);
     }
 
     public Usuario login(String nome, String senha) {
@@ -51,7 +61,9 @@ public class UsuarioService {
                 );
     }
 
-    public Usuario atualizar(long id, UsuarioRequest usuarioRequest) {
+    public Usuario atualizar(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
+        this.validarRole(usuarioLogado, Role.ADMIN);
+
         Usuario usuario1 = this.buscarPorId(id);
 
         usuario1.setNome(usuarioRequest.nome());
@@ -62,7 +74,9 @@ public class UsuarioService {
         return this.usuarioRepository.save(usuario1);
     }
 
-    public Usuario atualizarParcial(long id, UsuarioRequest usuarioRequest) {
+    public Usuario atualizarParcial(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
+        this.validarRole(usuarioLogado, Role.ADMIN);
+
         Usuario usuario = this.buscarPorId(id);
 
         if(usuarioRequest.nome() != null) usuario.setNome(usuarioRequest.nome());
@@ -74,7 +88,8 @@ public class UsuarioService {
 
     }
 
-    public void deletarPorId(long id) {
+    public void deletarPorId(long id, Usuario usuarioLogado) {
+        this.validarRole(usuarioLogado, Role.ADMIN);
         this.buscarPorId(id);
         this.usuarioRepository.deleteById(id);
     }

@@ -41,7 +41,7 @@ public class UsuarioController {
                             .map(UsuarioResponse::de)
                             .toList();
 
-            return new ResponseEntity(usuarioList, HttpStatus.OK);
+            return new ResponseEntity<>(usuarioList, HttpStatus.OK);
         } catch (Exception e) {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -51,21 +51,21 @@ public class UsuarioController {
     public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable long id) {
         try {
             Usuario usuario = this.usuarioService.buscarPorId(id);
-            return new ResponseEntity(UsuarioResponse.de(usuario), HttpStatus.OK);
+            return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
 
     @PutMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizar(
-            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         try {
-            Usuario usuario = usuarioService.atualizar(id, usuarioRequest);
+            Usuario usuario = usuarioService.atualizar(id, usuarioRequest, usuarioLogado);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -73,9 +73,9 @@ public class UsuarioController {
 
     @PatchMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizarParcial(
-            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         try {
-            Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest);
+            Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest, usuarioLogado);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

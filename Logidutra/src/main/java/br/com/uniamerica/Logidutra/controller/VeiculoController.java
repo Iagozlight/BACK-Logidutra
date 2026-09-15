@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,7 +32,7 @@ public class VeiculoController {
     private final VeiculoService veiculoService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<VeiculoResponse> salvar(@RequestBody VeiculoRequest veiculoRequest){
+    public ResponseEntity<VeiculoResponse> salvar(@RequestBody @Valid VeiculoRequest veiculoRequest){
         
         try{
             VeiculoEntity veiculo = veiculoService.salvar(veiculoRequest);
@@ -69,7 +70,7 @@ public class VeiculoController {
     }
 
     @PutMapping("/atualizar")
-    public ResponseEntity<VeiculoResponse> atualizarVeiculo(@RequestParam(required=true) Long id, @RequestBody VeiculoRequest veiculoRequest){
+    public ResponseEntity<VeiculoResponse> atualizarVeiculo(@RequestParam(required=true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest){
         try{
             VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
@@ -85,7 +86,7 @@ public class VeiculoController {
     }
 
     @PatchMapping("/atualizar")
-    public ResponseEntity<VeiculoResponse> atualizarParcialVeiculo(@RequestParam(required=true) Long id, @RequestBody VeiculoRequest veiculoRequest){
+    public ResponseEntity<VeiculoResponse> atualizarParcialVeiculo(@RequestParam(required=true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest){
         try{
             VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);

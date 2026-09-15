@@ -4,6 +4,7 @@ import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<UsuarioResponse> salvar(@RequestBody UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
+    public ResponseEntity<UsuarioResponse> salvar(@RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
         try {
             Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = this.usuarioService.salvar(usuarioRequest, usuarioLogado);
@@ -59,7 +60,7 @@ public class UsuarioController {
 
     @PutMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizar(
-            @RequestParam(required = true) long id, @RequestBody UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = usuarioService.atualizar(id, usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
@@ -72,7 +73,7 @@ public class UsuarioController {
 
     @PatchMapping("/atualizar")
     public ResponseEntity<UsuarioResponse> atualizarParcial(
-            @RequestParam(required = true) long id, @RequestBody UsuarioRequest usuarioRequest) {
+            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest) {
         try {
             Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest);
             return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);

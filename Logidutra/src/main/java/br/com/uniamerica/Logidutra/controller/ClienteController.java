@@ -5,6 +5,7 @@ import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
 import br.com.uniamerica.Logidutra.service.ClienteService;
+import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<ClienteResponse> salvar(@RequestBody ClienteRequest clienteRequest) {
+    public ResponseEntity<ClienteResponse> salvar(@RequestBody @Valid ClienteRequest clienteRequest) {
         try {
             ClienteEntity clienteEntity = this.clienteService.salvar(clienteRequest);
             return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.CREATED);

@@ -27,7 +27,7 @@ public class ClienteController {
             ClienteEntity clienteEntity = this.clienteService.salvar(clienteRequest);
             return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

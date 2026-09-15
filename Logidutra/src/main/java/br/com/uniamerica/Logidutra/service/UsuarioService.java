@@ -17,17 +17,10 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-
-    public void validarRole(Usuario usuarioLogado, Role roleExigida) {
-        if (usuarioLogado.getRole() != roleExigida) {
-            throw new ResponseStatusException(
-                    HttpStatus.FORBIDDEN, "Usuário não tem a permissão necessária para executar essa ação"
-            );
-        }
-    }
+    private final RoleService roleService;
 
     public Usuario salvar(UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
-        this.validarRole(usuarioLogado, Role.ADMIN);
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
 
         Usuario usuario = new Usuario();
 
@@ -64,7 +57,7 @@ public class UsuarioService {
     }
 
     public Usuario atualizar(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
-        this.validarRole(usuarioLogado, Role.ADMIN);
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
 
         Usuario usuario1 = this.buscarPorId(id);
 
@@ -77,7 +70,7 @@ public class UsuarioService {
     }
 
     public Usuario atualizarParcial(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
-        this.validarRole(usuarioLogado, Role.ADMIN);
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
 
         Usuario usuario = this.buscarPorId(id);
 
@@ -91,7 +84,7 @@ public class UsuarioService {
     }
 
     public void deletarPorId(long id, Usuario usuarioLogado) {
-        this.validarRole(usuarioLogado, Role.ADMIN);
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         this.buscarPorId(id);
         this.usuarioRepository.deleteById(id);
     }

@@ -12,7 +12,14 @@ public record ClienteResponse(
         @NotBlank
         String telefone,
         @NotBlank(message = "O CEP é obrigatório")
-        String cep
+        String cep,
+        @NotBlank
+        String logradouro,
+        @NotBlank
+        String bairro,
+        @NotBlank
+        String cidade
+
 ) {
 
     public static ClienteResponse de (ClienteEntity clienteEntity) {
@@ -21,7 +28,10 @@ public record ClienteResponse(
                 clienteEntity.getNome(),
                 clienteEntity.getCpf(),
                 clienteEntity.getTelefone(),
-                clienteEntity.getCep()
+                clienteEntity.getCep(),
+                clienteEntity.getLogradouro(),
+                clienteEntity.getBairro(),
+                clienteEntity.getCidade()
         );
     }
 }

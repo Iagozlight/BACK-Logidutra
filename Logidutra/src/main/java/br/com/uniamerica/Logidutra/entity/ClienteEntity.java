@@ -28,4 +28,14 @@ public class ClienteEntity {
 
     @Column(name = "cep", nullable = false)
     private String cep;
+
+    @Column(name = "logradouro")
+    private String logradouro;
+
+    @Column(name = "bairro")
+    private String bairro;
+
+    @Column(name = "cidade")
+    private String cidade;
+
 }

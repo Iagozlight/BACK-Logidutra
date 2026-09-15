@@ -1,10 +1,7 @@
 package br.com.uniamerica.Logidutra.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,7 +14,11 @@ public class Usuario {
     private Long id;
 
     private String nome;
+
+    @Column
     private String senha;
+
+    @Column(name = "age")
     private Integer idade;
     private Boolean perm;
 }

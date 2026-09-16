@@ -72,6 +72,7 @@ public class ClienteController {
         }
     }
 
+    @PatchMapping
     public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam(required = true) Long id, @Valid ClienteRequest clienteRequest) {
         try {
             ClienteEntity clienteEntity = clienteService.atualizarParcial(id, clienteRequest);

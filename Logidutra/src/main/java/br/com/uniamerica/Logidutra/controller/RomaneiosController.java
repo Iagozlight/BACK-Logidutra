@@ -25,14 +25,11 @@ public class RomaneiosController {
     private RomaneiosService romaneiosService;
 
     @PostMapping("/salvar")
-    public ResponseEntity<RomaneiosResponse> salvar (@Valid @RequestBody RomaneiosRequest romaneiosRequest){
-        log.info("End-point /salvar: Requisição de salvamento de romaneio");
-        try {
-
+    public ResponseEntity<RomaneiosResponse> salvar(@Valid @RequestBody RomaneiosRequest romaneiosRequest){
+        try{
             Romaneios romaneios = this.romaneiosService.salvar(romaneiosRequest);
-            return new ResponseEntity<RomaneiosResponse>(RomaneiosResponse.de(romaneios), HttpStatus.OK);
-        } catch (Exception e){
-            log.error(e.getMessage());
+            return new ResponseEntity<RomaneiosResponse>(RomaneiosResponse.de(romaneios), HttpStatus.CREATED);
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

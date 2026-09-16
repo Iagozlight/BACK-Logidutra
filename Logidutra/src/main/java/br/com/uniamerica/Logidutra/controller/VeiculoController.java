@@ -31,7 +31,7 @@ public class VeiculoController {
 
     private final VeiculoService veiculoService;
 
-    @PostMapping("/salvar")
+    @PostMapping
     public ResponseEntity<VeiculoResponse> salvar(@RequestBody @Valid VeiculoRequest veiculoRequest){
         
         try{
@@ -55,7 +55,7 @@ public class VeiculoController {
         }
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<VeiculoResponse> buscarPorId(@PathVariable Long id){
         try{
             VeiculoEntity veiculo = veiculoService.buscarPorId(id);
@@ -69,7 +69,7 @@ public class VeiculoController {
         }
     }
 
-    @PutMapping("/atualizar")
+    @PutMapping
     public ResponseEntity<VeiculoResponse> atualizarVeiculo(@RequestParam(required=true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest){
         try{
             VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest);
@@ -85,7 +85,7 @@ public class VeiculoController {
         }
     }
 
-    @PatchMapping("/atualizar")
+    @PatchMapping
     public ResponseEntity<VeiculoResponse> atualizarParcialVeiculo(@RequestParam(required=true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest){
         try{
             VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest);
@@ -101,7 +101,7 @@ public class VeiculoController {
         }
     }
 
-    @DeleteMapping("/deletar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<VeiculoResponse> deletar(@PathVariable Long id){
         try{
             veiculoService.deletar(id);

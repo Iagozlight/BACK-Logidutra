@@ -23,7 +23,7 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    @PostMapping("/salvar")
+    @PostMapping
     public ResponseEntity<ClienteResponse> salvar(@RequestBody @Valid ClienteRequest clienteRequest) {
         try {
             ClienteEntity clienteEntity = this.clienteService.salvar(clienteRequest);
@@ -48,7 +48,7 @@ public class ClienteController {
         }
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ClienteResponse> buscarPorId(@PathVariable Long id) {
         try {
             ClienteEntity clienteEntity = clienteService.buscarPorId(id);

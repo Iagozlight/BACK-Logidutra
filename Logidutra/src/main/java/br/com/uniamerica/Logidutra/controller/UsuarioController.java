@@ -20,7 +20,7 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @PostMapping("/salvar")
+    @PostMapping
     public ResponseEntity<UsuarioResponse> salvar(@RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
         try {
             Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
@@ -47,7 +47,7 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable long id) {
         try {
             Usuario usuario = this.usuarioService.buscarPorId(id);
@@ -58,7 +58,7 @@ public class UsuarioController {
 
     }
 
-    @PutMapping("/atualizar")
+    @PutMapping
     public ResponseEntity<UsuarioResponse> atualizar(
             @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         try {
@@ -71,7 +71,7 @@ public class UsuarioController {
     }
 
 
-    @PatchMapping("/atualizar")
+    @PatchMapping
     public ResponseEntity<UsuarioResponse> atualizarParcial(
             @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         try {
@@ -83,7 +83,7 @@ public class UsuarioController {
     }
 
 
-    @DeleteMapping("/deletar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable long id, @RequestParam Long usuarioLogadoId) {
         try {
             Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);

@@ -72,4 +72,15 @@ public class ClienteController {
         }
     }
 
+    public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam(required = true) Long id, @Valid ClienteRequest clienteRequest) {
+        try {
+            ClienteEntity clienteEntity = clienteService.atualizarParcial(id, clienteRequest);
+            return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);
+        } catch(NoSuchElementException e){
+            return new ResponseEntity<ClienteResponse>(HttpStatus.NOT_FOUND);
+        } catch(Exception e){
+            return new ResponseEntity<ClienteResponse>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

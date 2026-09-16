@@ -4,6 +4,7 @@ import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
 import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
 import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.NotBlank;
@@ -68,6 +69,11 @@ public class ClienteService {
 
         clienteEntity = clienteRepository.save(clienteEntity);
         return clienteEntity;
+    }
+
+    public void deletar(Long id) {
+        ClienteEntity clienteEntity = this.buscarPorId(id);
+        clienteRepository.delete(clienteEntity);
     }
 
 }

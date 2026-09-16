@@ -84,4 +84,18 @@ public class ClienteController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        try{
+            clienteService.deletar(id);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        catch(NoSuchElementException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 }

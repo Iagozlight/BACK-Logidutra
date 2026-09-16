@@ -61,7 +61,7 @@ public class ClienteController {
     }
 
     @PutMapping
-    public ResponseEntity<ClienteResponse> atualizar(@RequestParam(required=true) Long id, @Valid ClienteRequest clienteRequest) {
+    public ResponseEntity<ClienteResponse> atualizar(@RequestParam(required=true) Long id, @RequestBody @Valid ClienteRequest clienteRequest) {
         try {
             ClienteEntity clienteEntity = clienteService.atualizar(id, clienteRequest);
             return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);
@@ -73,7 +73,7 @@ public class ClienteController {
     }
 
     @PatchMapping
-    public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam(required = true) Long id, @Valid ClienteRequest clienteRequest) {
+    public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam(required = true) Long id, @RequestBody @Valid ClienteRequest clienteRequest) {
         try {
             ClienteEntity clienteEntity = clienteService.atualizarParcial(id, clienteRequest);
             return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);

@@ -20,4 +20,8 @@ public class Produto {
 
     @Column
     private Double preco;
+
+    @ManyToOne
+    @JoinColumn(name = "romaneio_id")
+    private Romaneios romaneios;
 }

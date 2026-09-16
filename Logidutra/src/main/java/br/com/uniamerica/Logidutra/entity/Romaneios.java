@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -19,4 +20,7 @@ public class Romaneios {
 
     @Column
     private LocalDate data;
+
+    @OneToMany(mappedBy = "romaneios")
+    private List<Produto> produtoList;
 }

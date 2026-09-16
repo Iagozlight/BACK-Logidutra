@@ -11,6 +11,12 @@ public record ClienteRequest(
         @NotBlank
         String telefone,
         @NotBlank
-        String cep
+        String cep,
+        @NotBlank
+        String logradouro,
+        @NotBlank
+        String bairro,
+        @NotBlank
+        String cidade
 ) {
 }

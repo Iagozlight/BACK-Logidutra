@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Transactional
     public ClienteEntity salvar(ClienteRequest clienteRequest) {
         ClienteEntity clienteEntity = new ClienteEntity();
 
@@ -36,11 +38,13 @@ public class ClienteService {
     public List<ClienteEntity> listar(){
         return this.clienteRepository.findAll();
     }
+
     public ClienteEntity buscarPorId(Long id) {
         ClienteEntity clienteEntity = clienteRepository.findById(id).orElseThrow();
         return clienteEntity;
     }
 
+    @Transactional
     public ClienteEntity atualizar(Long id, ClienteRequest clienteRequest){
         ClienteEntity clienteEntity = this.buscarPorId(id);
 
@@ -56,6 +60,7 @@ public class ClienteService {
         return clienteEntity;
     }
 
+    @Transactional
     public ClienteEntity atualizarParcial(Long id, ClienteRequest clienteRequest) {
         ClienteEntity clienteEntity = this.buscarPorId(id);
 
@@ -71,6 +76,7 @@ public class ClienteService {
         return clienteEntity;
     }
 
+    @Transactional
     public void deletar(Long id) {
         ClienteEntity clienteEntity = this.buscarPorId(id);
         clienteRepository.delete(clienteEntity);

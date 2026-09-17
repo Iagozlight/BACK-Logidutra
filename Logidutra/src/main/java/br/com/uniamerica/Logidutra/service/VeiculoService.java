@@ -10,6 +10,7 @@ import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
 import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @AllArgsConstructor
@@ -24,6 +25,7 @@ public class VeiculoService {
         return matcher.find();
     }
 
+    @Transactional
     public VeiculoEntity salvar(VeiculoRequest veiculoRequest){
         String placa = veiculoRequest.placa();
 
@@ -50,6 +52,7 @@ public class VeiculoService {
         return veiculoRepository.findAll();
     }
 
+    @Transactional
     public VeiculoEntity atualizar(Long id, VeiculoRequest veiculoRequest){
         VeiculoEntity veiculo = this.buscarPorId(id);
 
@@ -64,6 +67,7 @@ public class VeiculoService {
         return veiculo;
     }
 
+    @Transactional
     public VeiculoEntity atualizarParcial(Long id, VeiculoRequest veiculoRequest){
         VeiculoEntity veiculo = this.buscarPorId(id);
 
@@ -79,6 +83,7 @@ public class VeiculoService {
         return veiculo;
     }
 
+    @Transactional
     public void deletar(Long id){
         VeiculoEntity veiculo = this.buscarPorId(id);
         veiculoRepository.delete(veiculo);

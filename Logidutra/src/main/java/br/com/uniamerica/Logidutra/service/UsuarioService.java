@@ -8,6 +8,7 @@ import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final RoleService roleService;
 
+    @Transactional
     public Usuario salvar(UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
 
@@ -56,6 +58,7 @@ public class UsuarioService {
                 );
     }
 
+    @Transactional
     public Usuario atualizar(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
 
@@ -69,6 +72,7 @@ public class UsuarioService {
         return this.usuarioRepository.save(usuario1);
     }
 
+    @Transactional
     public Usuario atualizarParcial(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
 
@@ -83,6 +87,7 @@ public class UsuarioService {
 
     }
 
+    @Transactional
     public void deletarPorId(long id, Usuario usuarioLogado) {
         roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         this.buscarPorId(id);

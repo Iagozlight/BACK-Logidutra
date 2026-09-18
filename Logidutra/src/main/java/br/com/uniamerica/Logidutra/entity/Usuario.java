@@ -35,6 +35,6 @@ public class Usuario {
     @Column(name = "status", nullable = false)
     private StatusOperacional status;
 
-     @OneToMany(mappedBy = "motorista")
-     private List<Romaneios> romaneiosComoMotorista;
+    @OneToMany(mappedBy = "usuario")
+    private List<Romaneios> romaneiosComoMotorista;
 }

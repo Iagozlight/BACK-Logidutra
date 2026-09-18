@@ -33,10 +33,10 @@ public class Romaneios {
     private List<ClienteEntity> clientes;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "veiculo_id")
+    @JoinColumn(name = "veiculo_id", nullable = false)
     private VeiculoEntity veiculo;
 }

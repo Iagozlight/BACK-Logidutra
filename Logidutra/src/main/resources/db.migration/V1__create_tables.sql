@@ -4,7 +4,7 @@ CREATE TABLE usuarios (
                           senha   VARCHAR(255) NOT NULL,
                           idade   INTEGER,
                           role    VARCHAR(20)  NOT NULL,
-                          status  VARCHAR(20)  NOT NULL
+                          status  VARCHAR(20)
 );
 
 CREATE TABLE clientes (

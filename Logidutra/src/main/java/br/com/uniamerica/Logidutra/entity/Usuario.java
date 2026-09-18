@@ -32,7 +32,7 @@ public class Usuario {
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private StatusOperacional status;
 
     @OneToMany(mappedBy = "usuario")

@@ -86,6 +86,20 @@ public class VeiculoService {
     }
 
     @Transactional
+    public VeiculoEntity marcarEmRota(Long id) {
+        VeiculoEntity veiculo = this.buscarPorId(id);
+
+        if (veiculo.getStatus() == StatusOperacional.EM_ROTA) {
+            log.warn("Tentativa de alocar veículo {} que já está em rota", id);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Veículo já está em rota");
+        }
+
+        veiculo.setStatus(StatusOperacional.EM_ROTA);
+        log.info("Veículo {} marcado como EM_ROTA", id);
+        return veiculoRepository.save(veiculo);
+    }
+
+    @Transactional
     public void deletar(Long id) {
         log.info("Deletando veículo {}", id);
         VeiculoEntity veiculo = this.buscarPorId(id);

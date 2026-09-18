@@ -3,6 +3,7 @@ package br.com.uniamerica.Logidutra.controller.dto;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 
 import br.com.uniamerica.Logidutra.enums.Role;
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -11,13 +12,12 @@ import jakarta.validation.constraints.NotNull;
 
 public record UsuarioResponse(
         long id,
-        @NotBlank(message = "o nome e obrigatorio")
+        @NotBlank(message = "o nome é obrigatório")
         String nome,
-        @NotBlank(message = "a senha e obrigatorio")
-        String senha,
         @NotNull
         Integer idade,
-        Role role
+        Role role,
+        StatusOperacional status
 ) {
 
 
@@ -25,9 +25,9 @@ public record UsuarioResponse(
         return new UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
-                usuario.getSenha(),
                 usuario.getIdade(),
-                usuario.getRole()
+                usuario.getRole(),
+                usuario.getStatus()
         );
     }
 }

@@ -1,6 +1,7 @@
 package br.com.uniamerica.Logidutra.entity;
 
 import br.com.uniamerica.Logidutra.enums.Role;
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,4 +28,8 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private StatusOperacional status;
 }

@@ -44,7 +44,7 @@ public class UsuarioController {
 
             return new ResponseEntity<>(usuarioList, HttpStatus.OK);
         } catch (Exception e) {
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -80,6 +80,26 @@ public class UsuarioController {
         try {
             Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest, usuarioLogado);
+            return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping("/{id}/em-rota")
+    public ResponseEntity<UsuarioResponse> marcarEmRota(@PathVariable long id) {
+        try {
+            Usuario usuario = usuarioService.marcarEmRota(id);
+            return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping("/{id}/disponivel")
+    public ResponseEntity<UsuarioResponse> marcarDisponivel(@PathVariable long id) {
+        try {
+            Usuario usuario = usuarioService.marcarDisponivel(id);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

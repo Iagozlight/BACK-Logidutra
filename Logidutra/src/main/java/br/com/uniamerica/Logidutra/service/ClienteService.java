@@ -74,38 +74,52 @@ public class ClienteService {
     }
 
     public ClienteEntity buscarPorId(Long id) {
-        ClienteEntity clienteEntity = clienteRepository.findById(id).orElseThrow();
-        return clienteEntity;
+        return clienteRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Cliente " + id + " não encontrado"));
     }
 
     @Transactional
     public ClienteEntity atualizar(Long id, ClienteRequest clienteRequest) {
+        log.info("Atualizando cliente {}", id);
+
         ClienteEntity clienteEntity = this.buscarPorId(id);
+        ViaCepResponse viaCepResponse = consultarCep(clienteRequest.cep());
 
         clienteEntity.setNome(clienteRequest.nome());
         clienteEntity.setCpf(clienteRequest.cpf());
         clienteEntity.setTelefone(clienteRequest.telefone());
         clienteEntity.setCep(clienteRequest.cep());
+        clienteEntity.setLogradouro(viaCepResponse.logradouro());
+        clienteEntity.setBairro(viaCepResponse.bairro());
+        clienteEntity.setCidade(viaCepResponse.cidade());
 
-        clienteEntity = clienteRepository.save(clienteEntity);
-        return clienteEntity;
+        return clienteRepository.save(clienteEntity);
     }
 
     @Transactional
     public ClienteEntity atualizarParcial(Long id, ClienteRequest clienteRequest) {
+        log.info("Atualizando parcialmente cliente {}", id);
+
         ClienteEntity clienteEntity = this.buscarPorId(id);
 
         if (clienteRequest.nome() != null) clienteEntity.setNome(clienteRequest.nome());
         if (clienteRequest.cpf() != null) clienteEntity.setCpf(clienteRequest.cpf());
         if (clienteRequest.telefone() != null) clienteEntity.setTelefone(clienteRequest.telefone());
-        if (clienteRequest.cep() != null) clienteEntity.setCep(clienteRequest.cep());
+        if (clienteRequest.cep() != null && !clienteRequest.cep().equals(clienteEntity.getCep())) {
+            ViaCepResponse endereco = consultarCep(clienteRequest.cep());
+            clienteEntity.setCep(clienteRequest.cep());
+            clienteEntity.setLogradouro(endereco.logradouro());
+            clienteEntity.setBairro(endereco.bairro());
+            clienteEntity.setCidade(endereco.cidade());
+        }
 
-        clienteEntity = clienteRepository.save(clienteEntity);
-        return clienteEntity;
+        return clienteRepository.save(clienteEntity);
     }
 
     @Transactional
     public void deletar(Long id) {
+        log.info("Deletando cliente {}", id);
         ClienteEntity clienteEntity = this.buscarPorId(id);
         clienteRepository.delete(clienteEntity);
     }

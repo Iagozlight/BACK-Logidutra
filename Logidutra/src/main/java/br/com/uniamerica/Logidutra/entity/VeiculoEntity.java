@@ -1,5 +1,6 @@
 package br.com.uniamerica.Logidutra.entity;
 
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,4 +29,8 @@ public class VeiculoEntity {
 
     @Column(name = "placa", nullable = false)
     private String placa;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private StatusOperacional status;
 }

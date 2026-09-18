@@ -100,6 +100,14 @@ public class VeiculoService {
     }
 
     @Transactional
+    public VeiculoEntity marcarDisponivel(Long id) {
+        VeiculoEntity veiculo = this.buscarPorId(id);
+        veiculo.setStatus(StatusOperacional.DISPONIVEL);
+        log.info("Veículo {} marcado como DISPONIVEL", id);
+        return veiculoRepository.save(veiculo);
+    }
+
+    @Transactional
     public void deletar(Long id) {
         log.info("Deletando veículo {}", id);
         VeiculoEntity veiculo = this.buscarPorId(id);

@@ -4,8 +4,10 @@ import br.com.uniamerica.Logidutra.controller.UsuarioController;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.enums.Role;
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
@@ -23,6 +26,7 @@ public class UsuarioService {
     @Transactional
     public Usuario salvar(UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
+        log.info("Usuário {} criando novo usuário: {}", usuarioLogado.getNome(), usuarioRequest.nome());
 
         Usuario usuario = new Usuario();
 
@@ -30,6 +34,7 @@ public class UsuarioService {
         usuario.setIdade(usuarioRequest.idade());
         usuario.setRole(usuarioRequest.role());
         usuario.setSenha(usuarioRequest.senha());
+        usuario.setStatus(StatusOperacional.DISPONIVEL);
 
         return this.usuarioRepository.save(usuario);
     }
@@ -37,11 +42,13 @@ public class UsuarioService {
     public Usuario login(String nome, String senha) {
         Usuario usuario = usuarioRepository.findByNome(nome);
         if (usuario == null) {
-            throw new RuntimeException("Usuário não encontrado");
+            log.warn("Tentativa de login com usuário inexistente: {}", nome);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
         }
 
         if (!usuario.getSenha().equals(senha)) {
-            throw new RuntimeException("Senha incorreta");
+            log.warn("Senha incorreta para o usuário: {}", nome);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
         }
         return usuario;
     }
@@ -90,10 +97,9 @@ public class UsuarioService {
     @Transactional
     public void deletarPorId(long id, Usuario usuarioLogado) {
         roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
+        log.info("Usuário {} deletando usuário {}", usuarioLogado.getNome(), id);
         this.buscarPorId(id);
         this.usuarioRepository.deleteById(id);
     }
-
-
 
 }

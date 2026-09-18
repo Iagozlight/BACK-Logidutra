@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Pattern;
 public record ClienteRequest(
         @NotBlank
         String nome,
-        @NotBlank
+        @Pattern(regexp = "\\d{11}", message = "CPF deve conter 11 dígitos numéricos 000.000.000-00")
         String cpf,
         @NotBlank
         String telefone,

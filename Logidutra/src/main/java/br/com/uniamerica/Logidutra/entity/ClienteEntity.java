@@ -3,6 +3,8 @@ package br.com.uniamerica.Logidutra.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 
 @Entity
 @AllArgsConstructor
@@ -38,7 +40,7 @@ public class ClienteEntity {
     @Column(name = "cidade")
     private String cidade;
 
-//     @ManyToMany(mappedBy = "clientes")
-//     private List<RomaneioEntity> romaneios;
+     @ManyToMany(mappedBy = "clientes")
+     private List<Romaneios> romaneios;
 
 }

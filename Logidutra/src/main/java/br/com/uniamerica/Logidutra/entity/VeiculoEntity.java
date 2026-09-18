@@ -8,6 +8,8 @@ import lombok.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Entity
 
 @AllArgsConstructor
@@ -34,6 +36,6 @@ public class VeiculoEntity {
     @Column(name = "status", nullable = false)
     private StatusOperacional status;
 
-    // @OneToMany(mappedBy = "veiculo")
-    // private List<RomaneioEntity> romaneios;
+    @OneToMany(mappedBy = "veiculo")
+    private List<Romaneios> romaneios;
 }

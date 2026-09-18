@@ -5,6 +5,8 @@ import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,6 +35,6 @@ public class Usuario {
     @Column(name = "status", nullable = false)
     private StatusOperacional status;
 
-    // @OneToMany(mappedBy = "motorista")
-    // private List<RomaneioEntity> romaneiosComoMotorista;
+     @OneToMany(mappedBy = "motorista")
+     private List<Romaneios> romaneiosComoMotorista;
 }

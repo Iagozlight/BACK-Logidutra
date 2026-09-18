@@ -4,31 +4,43 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.enums.Role;
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
 import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class VeiculoService {
     private VeiculoRepository veiculoRepository;
+    private final RoleService roleService;
 
-    public boolean validarPlaca(String placa){
+    public boolean validarPlaca(String placa) {
         final String regexPlaca = "^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$";
-        
+
         Pattern pattern = Pattern.compile(regexPlaca);
         Matcher matcher = pattern.matcher(placa);
         return matcher.find();
     }
 
-    public VeiculoEntity salvar(VeiculoRequest veiculoRequest){
-        String placa = veiculoRequest.placa();
+    @Transactional
+    public VeiculoEntity salvar(VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
+        log.info("Salvando veículo placa {}", veiculoRequest.placa());
 
-        if(!validarPlaca(placa)){
-            throw new IllegalArgumentException();
+        if (!validarPlaca(veiculoRequest.placa())) {
+            log.warn("Placa inválida: {}", veiculoRequest.placa());
+            throw new IllegalArgumentException("Placa fora do formato esperado");
         }
 
         VeiculoEntity veiculo = new VeiculoEntity();
@@ -36,50 +48,75 @@ public class VeiculoService {
         veiculo.setMarca(veiculoRequest.marca());
         veiculo.setModelo(veiculoRequest.modelo());
         veiculo.setPlaca(veiculoRequest.placa());
+        veiculo.setStatus(StatusOperacional.DISPONIVEL);
 
-        veiculo = veiculoRepository.save(veiculo);
-        return veiculo;
+        return veiculoRepository.save(veiculo);
     }
 
-    public VeiculoEntity buscarPorId(Long id){
-        VeiculoEntity veiculo = veiculoRepository.findById(id).orElseThrow();
-        return veiculo;
+    public VeiculoEntity buscarPorId(Long id) {
+        return veiculoRepository.findById(id).orElseThrow();
     }
 
-    public List<VeiculoEntity> listar(){
+    public List<VeiculoEntity> listar() {
         return veiculoRepository.findAll();
     }
 
-    public VeiculoEntity atualizar(Long id, VeiculoRequest veiculoRequest){
+    @Transactional
+    public VeiculoEntity atualizar(Long id, VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         VeiculoEntity veiculo = this.buscarPorId(id);
 
         veiculo.setMarca(veiculoRequest.marca());
         veiculo.setModelo(veiculoRequest.modelo());
 
-        if(!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException();
+        if (!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException("Placa fora do formato esperado");
         veiculo.setPlaca(veiculoRequest.placa());
 
-        veiculo = veiculoRepository.save(veiculo);
-
-        return veiculo;
+        return veiculoRepository.save(veiculo);
     }
 
-    public VeiculoEntity atualizarParcial(Long id, VeiculoRequest veiculoRequest){
+    @Transactional
+    public VeiculoEntity atualizarParcial(Long id, VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         VeiculoEntity veiculo = this.buscarPorId(id);
 
-        if(veiculoRequest.marca() != null) veiculo.setMarca(veiculoRequest.marca());
-        if(veiculoRequest.modelo() != null) veiculo.setModelo(veiculoRequest.modelo());
-        if(veiculoRequest.placa() != null){
-            if(!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException();
+        if (veiculoRequest.marca() != null) veiculo.setMarca(veiculoRequest.marca());
+        if (veiculoRequest.modelo() != null) veiculo.setModelo(veiculoRequest.modelo());
+        if (veiculoRequest.placa() != null) {
+            if (!validarPlaca(veiculoRequest.placa()))
+                throw new IllegalArgumentException("Placa fora do formato esperado");
             veiculo.setPlaca(veiculoRequest.placa());
         }
 
-        veiculo = veiculoRepository.save(veiculo);
-
-        return veiculo;
+        return veiculoRepository.save(veiculo);
     }
 
-    public void deletar(Long id){
+    @Transactional
+    public VeiculoEntity marcarEmRota(Long id) {
+        VeiculoEntity veiculo = this.buscarPorId(id);
+
+        if (veiculo.getStatus() == StatusOperacional.EM_ROTA) {
+            log.warn("Tentativa de alocar veículo {} que já está em rota", id);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Veículo já está em rota");
+        }
+
+        veiculo.setStatus(StatusOperacional.EM_ROTA);
+        log.info("Veículo {} marcado como EM_ROTA", id);
+        return veiculoRepository.save(veiculo);
+    }
+
+    @Transactional
+    public VeiculoEntity marcarDisponivel(Long id) {
+        VeiculoEntity veiculo = this.buscarPorId(id);
+        veiculo.setStatus(StatusOperacional.DISPONIVEL);
+        log.info("Veículo {} marcado como DISPONIVEL", id);
+        return veiculoRepository.save(veiculo);
+    }
+
+    @Transactional
+    public void deletar(Long id, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
+        log.info("Deletando veículo {}", id);
         VeiculoEntity veiculo = this.buscarPorId(id);
         veiculoRepository.delete(veiculo);
     }

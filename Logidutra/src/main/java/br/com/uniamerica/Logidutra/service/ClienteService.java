@@ -50,14 +50,23 @@ public class ClienteService {
 
     @Transactional
     public ClienteEntity salvar(ClienteRequest clienteRequest) {
+        log.info("Salvando cliente: {}", clienteRequest.nome());
+
+        ViaCepResponse viaCepResponse = consultarCep(clienteRequest.cep());
+
         ClienteEntity clienteEntity = new ClienteEntity();
 
         clienteEntity.setNome(clienteRequest.nome());
         clienteEntity.setCpf(clienteRequest.cpf());
         clienteEntity.setTelefone(clienteRequest.telefone());
         clienteEntity.setCep(clienteRequest.cep());
+        clienteEntity.setLogradouro(viaCepResponse.logradouro());
+        clienteEntity.setBairro(viaCepResponse.bairro());
+        clienteEntity.setCidade(viaCepResponse.cidade());
 
-        return clienteRepository.save(clienteEntity);
+        ClienteEntity salvo = clienteRepository.save(clienteEntity);
+        log.info("Cliente {} salvo com id {}", salvo.getNome(), salvo.getId());
+        return salvo;
     }
 
     public List<ClienteEntity> listar() {

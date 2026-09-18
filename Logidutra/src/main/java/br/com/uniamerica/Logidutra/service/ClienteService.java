@@ -1,23 +1,15 @@
 package br.com.uniamerica.Logidutra.service;
 
 import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.Logidutra.controller.dto.ViaCepResponse;
 import br.com.uniamerica.Logidutra.data.feign.ViaCepClient;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -28,8 +20,6 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class ClienteService {
-
-    private final Logger logger;
 
     @Autowired
     private ClienteRepository clienteRepository;

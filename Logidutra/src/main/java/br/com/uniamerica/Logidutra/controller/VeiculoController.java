@@ -39,9 +39,9 @@ public class VeiculoController {
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.CREATED);
 
         }catch(IllegalArgumentException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }catch(Exception e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 
@@ -62,10 +62,10 @@ public class VeiculoController {
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
         }
         catch(NoSuchElementException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         catch(Exception e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 
@@ -73,15 +73,15 @@ public class VeiculoController {
     public ResponseEntity<VeiculoResponse> atualizarVeiculo(@RequestParam(required=true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest){
         try{
             VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest);
-            return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
+            return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
         }catch(IllegalArgumentException e){
-        return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
         catch(NoSuchElementException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         catch(Exception e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 
@@ -89,15 +89,15 @@ public class VeiculoController {
     public ResponseEntity<VeiculoResponse> atualizarParcialVeiculo(@RequestParam(required=true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest){
         try{
             VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest);
-            return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
+            return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
         }catch(IllegalArgumentException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         catch(NoSuchElementException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         catch(Exception e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 
@@ -105,13 +105,13 @@ public class VeiculoController {
     public ResponseEntity<VeiculoResponse> deletar(@PathVariable Long id){
         try{
             veiculoService.deletar(id);
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.OK);
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         catch(NoSuchElementException e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         catch(Exception e){
-            return new ResponseEntity<VeiculoResponse>(HttpStatus.BAD_GATEWAY);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 }

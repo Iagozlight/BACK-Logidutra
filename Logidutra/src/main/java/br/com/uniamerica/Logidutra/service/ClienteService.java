@@ -4,6 +4,8 @@ import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
 import br.com.uniamerica.Logidutra.controller.dto.ViaCepResponse;
 import br.com.uniamerica.Logidutra.data.feign.ViaCepClient;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
+import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.enums.Role;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
 import lombok.AllArgsConstructor;
 
@@ -25,6 +27,8 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
 
     private final ViaCepClient viaCepClient;
+    private final RoleService roleService;
+
 
     private ViaCepResponse consultarCep(String cep) {
         log.info("Consultando CEP {} na ViaCEP", cep);
@@ -39,7 +43,8 @@ public class ClienteService {
     }
 
     @Transactional
-    public ClienteEntity salvar(ClienteRequest clienteRequest) {
+    public ClienteEntity salvar(ClienteRequest clienteRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         log.info("Salvando cliente: {}", clienteRequest.nome());
 
         ViaCepResponse viaCepResponse = consultarCep(clienteRequest.cep());
@@ -70,7 +75,8 @@ public class ClienteService {
     }
 
     @Transactional
-    public ClienteEntity atualizar(Long id, ClienteRequest clienteRequest) {
+    public ClienteEntity atualizar(Long id, ClienteRequest clienteRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         log.info("Atualizando cliente {}", id);
 
         ClienteEntity clienteEntity = this.buscarPorId(id);
@@ -88,7 +94,8 @@ public class ClienteService {
     }
 
     @Transactional
-    public ClienteEntity atualizarParcial(Long id, ClienteRequest clienteRequest) {
+    public ClienteEntity atualizarParcial(Long id, ClienteRequest clienteRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         log.info("Atualizando parcialmente cliente {}", id);
 
         ClienteEntity clienteEntity = this.buscarPorId(id);
@@ -108,7 +115,8 @@ public class ClienteService {
     }
 
     @Transactional
-    public void deletar(Long id) {
+    public void deletar(Long id, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         log.info("Deletando cliente {}", id);
         ClienteEntity clienteEntity = this.buscarPorId(id);
         clienteRepository.delete(clienteEntity);

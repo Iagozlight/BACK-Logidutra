@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,11 +34,14 @@ public class VeiculoController {
 
     private final VeiculoService veiculoService;
 
+    private final UsuarioService usuarioService;
+
     @PostMapping
-    public ResponseEntity<VeiculoResponse> salvar(@RequestBody @Valid VeiculoRequest veiculoRequest) {
+    public ResponseEntity<VeiculoResponse> salvar(@RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
 
         try {
-            VeiculoEntity veiculo = veiculoService.salvar(veiculoRequest);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            VeiculoEntity veiculo = veiculoService.salvar(veiculoRequest, usuarioLogado);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.CREATED);
 
         } catch (IllegalArgumentException e) {
@@ -69,9 +74,10 @@ public class VeiculoController {
     }
 
     @PutMapping
-    public ResponseEntity<VeiculoResponse> atualizarVeiculo(@RequestParam(required = true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest) {
+    public ResponseEntity<VeiculoResponse> atualizarVeiculo(@RequestParam(required = true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
         try {
-            VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest, usuarioLogado);
             return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -83,9 +89,10 @@ public class VeiculoController {
     }
 
     @PatchMapping
-    public ResponseEntity<VeiculoResponse> atualizarParcialVeiculo(@RequestParam(required = true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest) {
+    public ResponseEntity<VeiculoResponse> atualizarParcialVeiculo(@RequestParam(required = true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
         try {
-            VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest, usuarioLogado);
             return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -119,9 +126,10 @@ public class VeiculoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<VeiculoResponse> deletar(@PathVariable Long id) {
+    public ResponseEntity<VeiculoResponse> deletar(@PathVariable Long id, @RequestParam Long usuarioLogadoId) {
         try {
-            veiculoService.deletar(id);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            veiculoService.deletar(id, usuarioLogado);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

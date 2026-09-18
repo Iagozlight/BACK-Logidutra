@@ -5,7 +5,9 @@ import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.Logidutra.controller.dto.VeiculoResponse;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
+import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.service.ClienteService;
+import br.com.uniamerica.Logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,15 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
+    @Autowired
+    private UsuarioService usuarioService;
+
     @PostMapping
-    public ResponseEntity<ClienteResponse> salvar(@RequestBody @Valid ClienteRequest clienteRequest) {
+    public ResponseEntity<ClienteResponse> salvar(@RequestBody @Valid ClienteRequest clienteRequest, @RequestParam Long usuarioLogadoId) {
         try {
-            ClienteEntity clienteEntity = this.clienteService.salvar(clienteRequest);
-            return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.CREATED);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            ClienteEntity clienteEntity = clienteService.salvar(clienteRequest, usuarioLogado);
+            return new ResponseEntity<>(ClienteResponse.de(clienteEntity), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -37,7 +43,7 @@ public class ClienteController {
     public ResponseEntity<List<ClienteResponse>> listar() {
         try {
             List<ClienteResponse> clienteList =
-                    this.clienteService.listar()
+                    clienteService.listar()
                             .stream()
                             .map(ClienteResponse::de)
                             .toList();
@@ -61,9 +67,10 @@ public class ClienteController {
     }
 
     @PutMapping
-    public ResponseEntity<ClienteResponse> atualizar(@RequestParam(required=true) Long id, @RequestBody @Valid ClienteRequest clienteRequest) {
+    public ResponseEntity<ClienteResponse> atualizar(@RequestParam(required=true) Long id, @RequestBody @Valid ClienteRequest clienteRequest, @RequestParam Long usuarioLogadoId) {
         try {
-            ClienteEntity clienteEntity = clienteService.atualizar(id, clienteRequest);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            ClienteEntity clienteEntity = clienteService.atualizar(id, clienteRequest, usuarioLogado);
             return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);
         } catch(NoSuchElementException e){
             return new ResponseEntity<ClienteResponse>(HttpStatus.NO_CONTENT);
@@ -73,9 +80,10 @@ public class ClienteController {
     }
 
     @PatchMapping
-    public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam(required = true) Long id, @RequestBody @Valid ClienteRequest clienteRequest) {
+    public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam(required = true) Long id, @RequestBody @Valid ClienteRequest clienteRequest, @RequestParam Long usuarioLogadoId) {
         try {
-            ClienteEntity clienteEntity = clienteService.atualizarParcial(id, clienteRequest);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            ClienteEntity clienteEntity = clienteService.atualizarParcial(id, clienteRequest, usuarioLogado);
             return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);
         } catch(NoSuchElementException e){
             return new ResponseEntity<ClienteResponse>(HttpStatus.NOT_FOUND);
@@ -85,9 +93,10 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id, @RequestParam Long usuarioLogadoId) {
         try{
-            clienteService.deletar(id);
+            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+            clienteService.deletar(id, usuarioLogado);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         catch(NoSuchElementException e){

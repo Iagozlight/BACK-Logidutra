@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.enums.Role;
 import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 @Slf4j
 public class VeiculoService {
     private VeiculoRepository veiculoRepository;
+    private final RoleService roleService;
 
     public boolean validarPlaca(String placa) {
         final String regexPlaca = "^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$";
@@ -31,7 +34,8 @@ public class VeiculoService {
     }
 
     @Transactional
-    public VeiculoEntity salvar(VeiculoRequest veiculoRequest) {
+    public VeiculoEntity salvar(VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         log.info("Salvando veículo placa {}", veiculoRequest.placa());
 
         if (!validarPlaca(veiculoRequest.placa())) {
@@ -58,7 +62,8 @@ public class VeiculoService {
     }
 
     @Transactional
-    public VeiculoEntity atualizar(Long id, VeiculoRequest veiculoRequest) {
+    public VeiculoEntity atualizar(Long id, VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         VeiculoEntity veiculo = this.buscarPorId(id);
 
         veiculo.setMarca(veiculoRequest.marca());
@@ -71,7 +76,8 @@ public class VeiculoService {
     }
 
     @Transactional
-    public VeiculoEntity atualizarParcial(Long id, VeiculoRequest veiculoRequest) {
+    public VeiculoEntity atualizarParcial(Long id, VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         VeiculoEntity veiculo = this.buscarPorId(id);
 
         if (veiculoRequest.marca() != null) veiculo.setMarca(veiculoRequest.marca());
@@ -108,7 +114,8 @@ public class VeiculoService {
     }
 
     @Transactional
-    public void deletar(Long id) {
+    public void deletar(Long id, Usuario usuarioLogado) {
+        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         log.info("Deletando veículo {}", id);
         VeiculoEntity veiculo = this.buscarPorId(id);
         veiculoRepository.delete(veiculo);

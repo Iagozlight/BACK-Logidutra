@@ -38,4 +38,7 @@ public class ClienteEntity {
     @Column(name = "cidade")
     private String cidade;
 
+//     @ManyToMany(mappedBy = "clientes")
+//     private List<RomaneioEntity> romaneios;
+
 }

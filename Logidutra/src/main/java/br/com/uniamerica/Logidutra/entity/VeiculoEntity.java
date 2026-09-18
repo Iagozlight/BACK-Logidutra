@@ -33,4 +33,7 @@ public class VeiculoEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private StatusOperacional status;
+
+    // @OneToMany(mappedBy = "veiculo")
+    // private List<RomaneioEntity> romaneios;
 }

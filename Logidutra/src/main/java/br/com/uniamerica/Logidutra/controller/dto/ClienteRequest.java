@@ -2,6 +2,7 @@ package br.com.uniamerica.Logidutra.controller.dto;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 public record ClienteRequest(
         @NotBlank
@@ -10,13 +11,7 @@ public record ClienteRequest(
         String cpf,
         @NotBlank
         String telefone,
-        @NotBlank
-        String cep,
-        @NotBlank
-        String logradouro,
-        @NotBlank
-        String bairro,
-        @NotBlank
-        String cidade
+        @Pattern(regexp = "\\d{5}-?\\d{3}", message = "CEP deve estar no formato 00000-000")
+        String cep
 ) {
 }

@@ -53,11 +53,11 @@ public class UsuarioService {
         return usuario;
     }
 
-    public List<Usuario> listar(){
+    public List<Usuario> listar() {
         return this.usuarioRepository.findAll();
     }
 
-    public Usuario buscarPorId(long id){
+    public Usuario buscarPorId(long id) {
         return this.usuarioRepository.findById(id)
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -85,13 +85,35 @@ public class UsuarioService {
 
         Usuario usuario = this.buscarPorId(id);
 
-        if(usuarioRequest.nome() != null) usuario.setNome(usuarioRequest.nome());
-        if(usuarioRequest.senha() != null) usuario.setSenha(usuarioRequest.senha());
-        if(usuarioRequest.idade() != null) usuario.setIdade(usuarioRequest.idade());
-        if(usuarioRequest.role() != null) usuario.setRole(usuarioRequest.role());
+        if (usuarioRequest.nome() != null) usuario.setNome(usuarioRequest.nome());
+        if (usuarioRequest.senha() != null) usuario.setSenha(usuarioRequest.senha());
+        if (usuarioRequest.idade() != null) usuario.setIdade(usuarioRequest.idade());
+        if (usuarioRequest.role() != null) usuario.setRole(usuarioRequest.role());
 
         return this.usuarioRepository.save(usuario);
 
+    }
+
+    @Transactional
+    public Usuario marcarEmRota(long id) {
+        Usuario usuario = this.buscarPorId(id);
+
+        if (usuario.getStatus() == StatusOperacional.EM_ROTA) {
+            log.warn("Tentativa de alocar motorista {} que já está em rota", id);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Motorista já está em rota");
+        }
+
+        usuario.setStatus(StatusOperacional.EM_ROTA);
+        log.info("Usuário {} marcado como EM_ROTA", id);
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario marcarDisponivel(long id) {
+        Usuario usuario = this.buscarPorId(id);
+        usuario.setStatus(StatusOperacional.DISPONIVEL);
+        log.info("Usuário {} marcado como DISPONIVEL", id);
+        return usuarioRepository.save(usuario);
     }
 
     @Transactional

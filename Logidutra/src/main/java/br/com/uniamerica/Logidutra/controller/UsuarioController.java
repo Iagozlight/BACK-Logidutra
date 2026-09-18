@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/logidutra/usuario")
@@ -25,12 +25,13 @@ public class UsuarioController {
         try {
             Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = this.usuarioService.salvar(usuarioRequest, usuarioLogado);
-            return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.CREATED);
+            return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.CREATED);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> listar() {
@@ -52,6 +53,8 @@ public class UsuarioController {
         try {
             Usuario usuario = this.usuarioService.buscarPorId(id);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -60,28 +63,28 @@ public class UsuarioController {
 
     @PutMapping
     public ResponseEntity<UsuarioResponse> atualizar(
-            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
+            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
         try {
+            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = usuarioService.atualizar(id, usuarioRequest, usuarioLogado);
-            return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
+            return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
-
 
     @PatchMapping
     public ResponseEntity<UsuarioResponse> atualizarParcial(
-            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
+            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
         try {
+            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest, usuarioLogado);
-            return new ResponseEntity<UsuarioResponse>(UsuarioResponse.de(usuario), HttpStatus.OK);
+            return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable long id, @RequestParam Long usuarioLogadoId) {

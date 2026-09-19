@@ -23,4 +23,20 @@ public class Romaneios {
 
     @OneToMany(mappedBy = "romaneios")
     private List<Produto> produtoList;
+
+    @ManyToMany
+    @JoinTable(
+            name = "romaneio_cliente",
+            joinColumns = @JoinColumn(name = "romaneio_id"),
+            inverseJoinColumns = @JoinColumn(name = "cliente_id")
+    )
+    private List<ClienteEntity> clientes;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+    @ManyToOne
+    @JoinColumn(name = "veiculo_id", nullable = false)
+    private VeiculoEntity veiculo;
 }

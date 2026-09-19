@@ -5,6 +5,8 @@ import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -30,9 +32,9 @@ public class Usuario {
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private StatusOperacional status;
 
-    // @OneToMany(mappedBy = "motorista")
-    // private List<RomaneioEntity> romaneiosComoMotorista;
+    @OneToMany(mappedBy = "usuario")
+    private List<Romaneios> romaneiosComoMotorista;
 }

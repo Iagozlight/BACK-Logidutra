@@ -1,14 +1,14 @@
 package br.com.uniamerica.Logidutra.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.List;
 
 @Entity
 
@@ -17,12 +17,25 @@ import lombok.Getter;
 @Getter
 @Setter
 @ToString
-
+@Table(name = "veiculos")
 public class VeiculoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(name = "marca", nullable = false)
     private String marca;
+
+    @Column(name = "modelo", nullable = false)
     private String modelo;
+
+    @Column(name = "placa", nullable = false)
     private String placa;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private StatusOperacional status;
+
+    @OneToMany(mappedBy = "veiculo")
+    private List<Romaneios> romaneios;
 }

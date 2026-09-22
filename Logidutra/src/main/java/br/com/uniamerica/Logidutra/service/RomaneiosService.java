@@ -69,26 +69,41 @@ public class RomaneiosService {
     public Romaneios buscarPorId (long id){
         return this.romaneiosRepository.findById(id)
                 .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Romaneio " + id + " não encontrado")
                 );
     }
 
+    @Transactional
     public Romaneios atualizar (long id, RomaneiosRequest romaneiosRequest) {
         Romaneios romaneios = this.buscarPorId(id);
 
         romaneios.setData(romaneiosRequest.data());
 
-        return this.romaneiosRepository.save(romaneios);
+        romaneios.setVeiculo(veiculoService.buscarPorId(romaneiosRequest.veiculoId()));
+        romaneios.setUsuario(usuarioService.buscarPorId(romaneiosRequest.usuarioId()));
+        romaneios.setClientes(clienteRepository.findAllById(romaneiosRequest.clienteId()));
+
+        if (romaneiosRequest.produtoId() != null) {
+            romaneios.setProdutoList(produtoRepository.findAllById(romaneiosRequest.produtoId()));
+        }
+
+        return romaneiosRepository.save(romaneios);
     }
 
+    @Transactional
     public Romaneios atualizarParcial (long id, RomaneiosRequest romaneiosRequest){
         Romaneios romaneios = this.buscarPorId(id);
 
-        if(romaneiosRequest.data()!= null) romaneios.setData(romaneiosRequest.data());
+        if (romaneiosRequest.data() != null) romaneios.setData(romaneiosRequest.data());
+        if (romaneiosRequest.veiculoId() != null) romaneios.setVeiculo(veiculoService.buscarPorId(romaneiosRequest.veiculoId()));
+        if (romaneiosRequest.usuarioId() != null) romaneios.setUsuario(usuarioService.buscarPorId(romaneiosRequest.usuarioId()));
+        if (romaneiosRequest.clienteId() != null) romaneios.setClientes(clienteRepository.findAllById(romaneiosRequest.clienteId()));
+        if (romaneiosRequest.produtoId() != null) romaneios.setProdutoList(produtoRepository.findAllById(romaneiosRequest.produtoId()));
 
-        return this.romaneiosRepository.save(romaneios);
+        return romaneiosRepository.save(romaneios);
     }
 
+    @Transactional
     public void deletarPorID(long id){
         this.buscarPorId(id);
         this.romaneiosRepository.deleteById(id);

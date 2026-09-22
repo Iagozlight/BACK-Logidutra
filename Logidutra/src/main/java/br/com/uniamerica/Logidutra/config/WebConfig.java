@@ -9,11 +9,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
+        registry.addMapping("/**")
                 // Troque pela URL real do front (ex: http://localhost:4200 se for Angular).
                 // "*" libera geral - só use isso em desenvolvimento/apresentação, não em produção.
+                .allowedOriginPatterns("*")
                 .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
-                .allowedHeaders("*");
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }

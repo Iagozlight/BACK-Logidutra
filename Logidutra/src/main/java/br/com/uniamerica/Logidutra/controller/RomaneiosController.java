@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/logidutra/romaneios")
 @Slf4j
+@CrossOrigin(origins = "http://localhost:4200")
 public class RomaneiosController {
 
     @Autowired

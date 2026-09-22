@@ -20,6 +20,7 @@ import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/logidutra/cliente")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ClienteController {
 
     @Autowired

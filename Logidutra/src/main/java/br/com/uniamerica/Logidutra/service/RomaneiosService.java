@@ -3,14 +3,16 @@ package br.com.uniamerica.Logidutra.service;
 import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
 import br.com.uniamerica.Logidutra.controller.dto.RomaneiosRequest;
 import br.com.uniamerica.Logidutra.controller.dto.RomaneiosResponse;
-import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.entity.Romaneios;
+import br.com.uniamerica.Logidutra.entity.*;
+import br.com.uniamerica.Logidutra.repository.ClienteRepository;
+import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import br.com.uniamerica.Logidutra.repository.RomaneiosRepository;
 import jakarta.persistence.Entity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -22,19 +24,42 @@ import java.util.logging.Logger;
 public class RomaneiosService {
 
     private final RomaneiosRepository romaneiosRepository;
+    private final ClienteRepository clienteRepository;
+    private final ProdutoRepository produtoRepository;
+    private final VeiculoService veiculoService;
+    private final UsuarioService usuarioService;
 
-    private Logger logger;
 
+    @Transactional
     public Romaneios salvar(RomaneiosRequest romaneiosRequest){
 
-        log.info("Iniciando a validação de um romaneio");
-        Romaneios romaneiosnovo = new Romaneios();
+        log.info("Criando romaneio para data {}", romaneiosRequest.data());
 
-        romaneiosnovo.setId(romaneiosRequest.id());
-        romaneiosnovo.setData(romaneiosRequest.data());
+        VeiculoEntity veiculo = veiculoService.buscarPorId(romaneiosRequest.veiculoId());
+        Usuario motorista = usuarioService.buscarPorId(romaneiosRequest.usuarioId());
 
-        log.info("romaneio aprovado e salvo");
-        return this.romaneiosRepository.save(romaneiosnovo);
+        List<ClienteEntity> clientes = clienteRepository.findAllById(romaneiosRequest.clienteId());
+        if (clientes.size() != romaneiosRequest.clienteId().size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Um ou mais clientes informados não existem");
+        }
+
+        Romaneios romaneios = new Romaneios();
+        romaneios.setData(romaneiosRequest.data());
+        romaneios.setVeiculo(veiculo);
+        romaneios.setUsuario(motorista);
+        romaneios.setClientes(clientes);
+
+        if (romaneiosRequest.produtoId() != null && !romaneiosRequest.produtoId().isEmpty()) {
+            List<Produto> produtos = produtoRepository.findAllById(romaneiosRequest.produtoId());
+            if (produtos.size() != romaneiosRequest.produtoId().size()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Um ou mais produtos informados não existem");
+            }
+            romaneios.setProdutoList(produtos);
+        }
+
+        Romaneios salvo = romaneiosRepository.save(romaneios);
+        log.info("Romaneio {} criado", salvo.getId());
+        return salvo;
     }
 
     public List <Romaneios> listar (){

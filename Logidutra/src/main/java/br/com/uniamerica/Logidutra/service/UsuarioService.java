@@ -26,11 +26,16 @@ public class UsuarioService {
     @Transactional
     public Usuario salvar(UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
         roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-        log.info("Usuário {} criando novo usuário: {}", usuarioLogado.getNome(), usuarioRequest.nome());
+
+        String nomeLimpo = usuarioRequest.nome().trim();
+        if (usuarioRepository.existsByNomeIgnoreCase(nomeLimpo)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com o nome: " + nomeLimpo);
+        }
+
+        log.info("Usuário {} criando novo usuário: {}", usuarioLogado.getNome(), nomeLimpo);
 
         Usuario usuario = new Usuario();
-
-        usuario.setNome(usuarioRequest.nome());
+        usuario.setNome(nomeLimpo);
         usuario.setIdade(usuarioRequest.idade());
         usuario.setRole(usuarioRequest.role());
         usuario.setSenha(usuarioRequest.senha());
@@ -40,16 +45,17 @@ public class UsuarioService {
     }
 
     public Usuario login(String nome, String senha) {
-        Usuario usuario = usuarioRepository.findByNome(nome);
+        String nomeLimpo = nome != null ? nome.trim() : "";
+        Usuario usuario = usuarioRepository.findByNomeIgnoreCase(nomeLimpo);
         if (usuario == null) {
-            log.warn("Tentativa de login com usuário inexistente: {}", nome);
+            log.warn("Tentativa de login com usuário inexistente: {}", nomeLimpo);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
         }
-
         if (!usuario.getSenha().equals(senha)) {
-            log.warn("Senha incorreta para o usuário: {}", nome);
+            log.warn("Senha incorreta para o usuário: {}", nomeLimpo);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
         }
+
         return usuario;
     }
 

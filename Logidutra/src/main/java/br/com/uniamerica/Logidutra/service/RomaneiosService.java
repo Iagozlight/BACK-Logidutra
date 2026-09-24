@@ -104,8 +104,11 @@ public class RomaneiosService {
     }
 
     @Transactional
-    public void deletarPorID(long id){
-        this.buscarPorId(id);
-        this.romaneiosRepository.deleteById(id);
+    public void deletarPorID(long id) {
+        Romaneios romaneio = this.buscarPorId(id);
+        if (romaneio.getProdutoList() != null && !romaneio.getProdutoList().isEmpty()) {
+            this.produtoRepository.deleteAll(romaneio.getProdutoList());
+        }
+        this.romaneiosRepository.delete(romaneio);
     }
 }

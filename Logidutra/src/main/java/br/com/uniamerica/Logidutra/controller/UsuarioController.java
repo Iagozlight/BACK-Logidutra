@@ -22,15 +22,16 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<UsuarioResponse> salvar(@RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
+    public ResponseEntity<?> salvar(@RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
         try {
             Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = this.usuarioService.salvar(usuarioRequest, usuarioLogado);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.CREATED);
         } catch (ResponseStatusException e) {
-            return new ResponseEntity<>(e.getStatusCode());
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

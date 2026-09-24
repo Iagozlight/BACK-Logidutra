@@ -1,6 +1,7 @@
 package br.com.uniamerica.Logidutra.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 
 // @JsonIgnoreProperties evita erro caso a API mande algum campo extra que a gente não mapeou
@@ -9,7 +10,7 @@ public record ViaCepResponse (
         String cep,
         String logradouro,
         String bairro,
-        String cidade,
+        @JsonProperty("localidade") String cidade,
         Boolean erro
 ) {
 }

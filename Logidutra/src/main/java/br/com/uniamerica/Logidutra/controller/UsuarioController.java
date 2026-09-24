@@ -34,6 +34,16 @@ public class UsuarioController {
         }
     }
 
+    @GetMapping("/login")
+    public ResponseEntity<UsuarioResponse> login(@RequestParam String nome, @RequestParam String senha) {
+        try {
+            Usuario usuario = this.usuarioService.login(nome, senha);
+            return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<UsuarioResponse>> listar() {
         try {
@@ -61,6 +71,8 @@ public class UsuarioController {
         }
 
     }
+
+
 
     @PutMapping
     public ResponseEntity<UsuarioResponse> atualizar(

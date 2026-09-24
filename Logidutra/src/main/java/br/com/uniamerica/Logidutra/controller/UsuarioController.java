@@ -100,6 +100,18 @@ public class UsuarioController {
         }
     }
 
+    @PatchMapping("/recuperar-senha")
+    public ResponseEntity<?> redefinirSenha(@RequestParam String nome, @RequestParam String novaSenha) {
+        try {
+            usuarioService.redefinirSenha(nome, novaSenha);
+            return ResponseEntity.ok().build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao redefinir senha.");
+        }
+    }
+
     @PatchMapping("/{id}/em-rota")
     public ResponseEntity<UsuarioResponse> marcarEmRota(@PathVariable long id) {
         try {

@@ -59,6 +59,24 @@ public class UsuarioService {
         return usuario;
     }
 
+    @Transactional
+    public void redefinirSenha(String nome, String novaSenha) {
+        String nomeLimpo = nome != null ? nome.trim() : "";
+        Usuario usuario = usuarioRepository.findByNomeIgnoreCase(nomeLimpo);
+        if (usuario == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado.");
+        }
+        if (usuario.getRole() == Role.ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Administradores não podem redefinir a senha por este caminho.");
+        }
+
+        usuario.setSenha(novaSenha);
+        usuarioRepository.save(usuario);
+        log.info("Senha redefinida com sucesso para o usuário: {}", nomeLimpo);
+    }
+
+
+
     public List<Usuario> listar() {
         return this.usuarioRepository.findAll();
     }

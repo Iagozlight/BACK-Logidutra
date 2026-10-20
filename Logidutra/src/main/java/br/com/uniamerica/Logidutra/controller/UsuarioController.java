@@ -30,7 +30,6 @@ public class UsuarioController {
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

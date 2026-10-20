@@ -5,6 +5,8 @@ import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.Logidutra.data.feign.ViaCepClient;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
 import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.enums.Role;
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,11 +40,22 @@ public class ClienteServiceTest {
         Assertions.assertEquals(cep, clienteEntity.getCep());
     }
 
+    @Test
+    void SalvarCliente() {
+        ClienteRequest clienteRequest = new ClienteRequest("Gabriel", "12345678901", "45999999999", "85876113");
+        Usuario usuario = new Usuario(1L, "Gabriel", "12345678", 21, Role.ADMIN, StatusOperacional.EM_ROTA, null);
+
+        Assertions.assertEquals(clienteRequest, usuario);
+    }
+
 
     @Test
     void ConsultarCepGet() {
-        String cep = "123-456-7890";
-        ClienteResponse response = new ClienteResponse(1, "Gabriel", "12345678901", "45999999999");
+
+    }
+
+    @Test
+    void DeletarCliente() {
 
     }
 }

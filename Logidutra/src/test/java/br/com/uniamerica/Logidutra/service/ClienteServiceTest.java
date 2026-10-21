@@ -18,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willDoNothing;
@@ -66,11 +68,26 @@ public class ClienteServiceTest {
         Assertions.assertEquals("45999999999", resultado.getTelefone());
         Assertions.assertEquals("85850-000", resultado.getCep());
 
-        //O Verify ele validda se tá tudo certo 
+        //O Verify ele validda se tá tudo certo
         verify(roleService).validarRole(1L, Role.ADMIN);
         verify(clienteRepository).save(any(ClienteEntity.class));
         verify(viaCepClient).buscarPorCep(clienteRequest.cep());
         verifyNoMoreInteractions(viaCepClient, roleService);
+    }
+
+    @Test
+    @DisplayName("Não deve salvar cliente quando o usuário não tiver permissão de ADMIN")
+    void naoSalvar_cliente() {
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado")).when(roleService).validarRole(1L, Role.ADMIN);
+
+        ResponseStatusException excecao = Assertions.assertThrows(ResponseStatusException.class, () -> clienteService.salvar(clienteRequest, usuarioAdmin));
+
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, excecao.getStatusCode());
+        Assertions.assertEquals("Acesso negado", excecao.getReason());
+
+        verify(roleService).validarRole(1L, Role.ADMIN);
+        verifyNoInteractions(viaCepClient);
+        verify(clienteRepository, never()).save(any());
     }
 
 

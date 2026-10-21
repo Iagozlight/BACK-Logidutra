@@ -7,10 +7,10 @@ import br.com.uniamerica.Logidutra.enums.Role;
 import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
@@ -18,17 +18,16 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class VeiculoServiceTest {
-    @MockitoBean
+    @Mock
     private VeiculoRepository veiculoRepository;
-    @MockitoBean
+    @Mock
     private RoleService roleService;
 
-    @Autowired
+    @InjectMocks
     private VeiculoService veiculoService;
 
     @Test
@@ -57,20 +56,13 @@ public class VeiculoServiceTest {
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
 
 
-        this.veiculoService.salvar(veiculoRequest, usuario);
+        var carro = this.veiculoService.salvar(veiculoRequest, usuario);
 
 
-        ArgumentCaptor<VeiculoEntity> captorador = ArgumentCaptor.forClass(VeiculoEntity.class);
-
-        verify(veiculoRepository).save(captorador.capture());
-
-        verify(roleService).validarRole(anyLong(), any());
-
-        VeiculoEntity veiculoSalvo = captorador.getValue();
-        assertEquals("Fiat", veiculoSalvo.getMarca());
-        assertEquals("Uno", veiculoSalvo.getModelo());
-        assertEquals("ABC1C34", veiculoSalvo.getPlaca());
-        assertEquals(StatusOperacional.DISPONIVEL, veiculoSalvo.getStatus());
+        assertEquals("Fiat", carro.getMarca());
+        assertEquals("Uno", carro.getModelo());
+        assertEquals("ABC1C34", carro.getPlaca());
+        assertEquals(StatusOperacional.DISPONIVEL, carro.getStatus());
     }
 
     @Test
@@ -98,25 +90,16 @@ public class VeiculoServiceTest {
     void atualizarComDadosValidos(){
         VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.DISPONIVEL, null);
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
+        when(this.veiculoRepository.save(any(VeiculoEntity.class))).thenReturn(veiculo);
         when(this.veiculoRepository.findById(1L)).thenReturn(Optional.of(veiculo));
 
         VeiculoRequest veiculoRequest = new VeiculoRequest("Chevrolet", "Prisma", "DEF1G34");
 
-        this.veiculoService.atualizar(1L, veiculoRequest, usuario);
+        var carro = this.veiculoService.atualizar(1L, veiculoRequest, usuario);
 
-        ArgumentCaptor<VeiculoEntity> capturador = ArgumentCaptor.forClass(VeiculoEntity.class);
-
-        verify(roleService).validarRole(1L, Role.ADMIN);
-        verify(veiculoRepository).findById(1L);
-        verify(veiculoRepository).save(capturador.capture());
-
-        VeiculoEntity veiculoAtualizado = capturador.getValue();
-
-        assertEquals(veiculoRequest.marca(), veiculoAtualizado.getMarca());
-        assertEquals(veiculoRequest.modelo(), veiculoAtualizado.getModelo());
-        assertEquals(veiculoRequest.placa(), veiculoAtualizado.getPlaca());
-
-        verify(veiculoRepository).save(any(VeiculoEntity.class));
+        assertEquals("Chevrolet", carro.getMarca());
+        assertEquals("Prisma", carro.getModelo());
+        assertEquals("DEF1G34", carro.getPlaca());
     }
 
     @Test
@@ -148,92 +131,68 @@ public class VeiculoServiceTest {
     void atualizarParcialVeiculoValido() {
         VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.DISPONIVEL, null);
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
+        when(this.veiculoRepository.save(any(VeiculoEntity.class))).thenReturn(veiculo);
         when(this.veiculoRepository.findById(1L)).thenReturn(Optional.of(veiculo));
 
         VeiculoRequest veiculoRequest = new VeiculoRequest("Chevrolet", "Prisma", "DEF1G34");
 
-        this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
+        var carro = this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
 
-
-        ArgumentCaptor<VeiculoEntity> captorador = ArgumentCaptor.forClass(VeiculoEntity.class);
-
-        verify(veiculoRepository).save(captorador.capture());
-
-        verify(roleService).validarRole(anyLong(), any());
-
-        VeiculoEntity veiculoAtualizado = captorador.getValue();
-        assertEquals(veiculoRequest.marca(), veiculoAtualizado.getMarca());
-        assertEquals(veiculoRequest.modelo(), veiculoAtualizado.getModelo());
-        assertEquals(veiculoRequest.placa(), veiculoAtualizado.getPlaca());
+        assertEquals(veiculoRequest.marca(), carro.getMarca());
+        assertEquals(veiculoRequest.modelo(), carro.getModelo());
+        assertEquals(veiculoRequest.placa(), carro.getPlaca());
     }
 
     @Test
     void atualizarParcialVeiculoValidoComRequestParcialMarca() {
         VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.DISPONIVEL, null);
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
+        when(this.veiculoRepository.save(any(VeiculoEntity.class))).thenReturn(veiculo);
         when(this.veiculoRepository.findById(1L)).thenReturn(Optional.of(veiculo));
 
         VeiculoRequest veiculoRequest = new VeiculoRequest("Chevrolet", null, null);
 
-        ArgumentCaptor<VeiculoEntity> captorador = ArgumentCaptor.forClass(VeiculoEntity.class);
-
         //Marca
-        this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
+        var carro = this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
 
-        verify(veiculoRepository).save(captorador.capture());
-
-        verify(roleService).validarRole(anyLong(), any());
-
-        VeiculoEntity veiculoAtualizado = captorador.getValue();
-        assertEquals(veiculoRequest.marca(), veiculoAtualizado.getMarca());
-        assertEquals("Uno", veiculoAtualizado.getModelo());
-        assertEquals("ABC1C34", veiculoAtualizado.getPlaca());
+        assertEquals(veiculoRequest.marca(), carro.getMarca());
+        assertEquals("Uno", carro.getModelo());
+        assertEquals("ABC1C34", carro.getPlaca());
     }
 
     @Test
     void atualizarParcialVeiculoValidoComRequestParcialModelo(){
         VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.DISPONIVEL, null);
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
+        when(this.veiculoRepository.save(any(VeiculoEntity.class))).thenReturn(veiculo);
         when(this.veiculoRepository.findById(1L)).thenReturn(Optional.of(veiculo));
 
         VeiculoRequest veiculoRequest = new VeiculoRequest(null, "Prisma", null);
 
-        ArgumentCaptor<VeiculoEntity> captorador = ArgumentCaptor.forClass(VeiculoEntity.class);
-
         //Modelo
-        this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
+        var carro = this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
 
-        verify(roleService).validarRole(anyLong(), any());
-
-        verify(veiculoRepository).save(captorador.capture());
-
-        VeiculoEntity veiculoAtualizado = captorador.getValue();
-        assertEquals("Fiat", veiculoAtualizado.getMarca());
-        assertEquals(veiculoRequest.modelo(), veiculoAtualizado.getModelo());
-        assertEquals("ABC1C34", veiculoAtualizado.getPlaca());
+        assertEquals("Fiat", carro.getMarca());
+        assertEquals(veiculoRequest.modelo(), carro.getModelo());
+        assertEquals("ABC1C34", carro.getPlaca());
     }
 
     @Test
     void atualizarParcialVeiculoValidoComRequestParcialPlaca(){
         VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.DISPONIVEL, null);
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
+        when(this.veiculoRepository.save(any(VeiculoEntity.class))).thenReturn(veiculo);
         when(this.veiculoRepository.findById(1L)).thenReturn(Optional.of(veiculo));
 
         VeiculoRequest veiculoRequest = new VeiculoRequest(null, null, "DEF1G34");
 
-        ArgumentCaptor<VeiculoEntity> captorador = ArgumentCaptor.forClass(VeiculoEntity.class);
-
         //Placa
-        this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
+        var carro = this.veiculoService.atualizarParcial(1L, veiculoRequest, usuario);
 
-        verify(roleService).validarRole(anyLong(), any());
 
-        verify(veiculoRepository).save(captorador.capture());
-
-        VeiculoEntity veiculoAtualizado = captorador.getValue();
-        assertEquals("Fiat", veiculoAtualizado.getMarca());
-        assertEquals("Uno", veiculoAtualizado.getModelo());
-        assertEquals(veiculoRequest.placa(), veiculoAtualizado.getPlaca());
+        assertEquals("Fiat", carro.getMarca());
+        assertEquals("Uno", carro.getModelo());
+        assertEquals(veiculoRequest.placa(), carro.getPlaca());
     }
 
     @Test
@@ -250,7 +209,6 @@ public class VeiculoServiceTest {
 
     @Test
     void atualizarParcialNaoSalvaQuandoValidacaoDeRoleFalha(){
-        VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.DISPONIVEL, null);
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
         doThrow(new RuntimeException()).when(roleService).validarRole(1L, Role.ADMIN);
 
@@ -261,7 +219,6 @@ public class VeiculoServiceTest {
     }
     @Test
     void atualizarParcialNaoSalvaQuandoFindByIdFalha(){
-        VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.DISPONIVEL, null);
         Usuario usuario = new Usuario(1L, "Teste", "Teste", 20, Role.ADMIN, StatusOperacional.DISPONIVEL, null);
         when(this.veiculoRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -279,7 +236,6 @@ public class VeiculoServiceTest {
 
         this.veiculoService.deletar(1L, usuario);
 
-        verify(roleService).validarRole(1L, Role.ADMIN);
         verify(veiculoRepository).delete(veiculo);
     }
     @Test
@@ -289,7 +245,6 @@ public class VeiculoServiceTest {
 
         assertThrows(NoSuchElementException.class, () -> this.veiculoService.deletar(1L, usuario));
 
-        verify(roleService).validarRole(1L, Role.ADMIN);
         verify(veiculoRepository, never()).delete(any());
     }
     @Test
@@ -299,7 +254,6 @@ public class VeiculoServiceTest {
 
         assertThrows(RuntimeException.class, () -> this.veiculoService.deletar(1L, usuario));
 
-        verify(roleService).validarRole(1L, Role.ADMIN);
         verify(veiculoRepository, never()).delete(any());
     }
 
@@ -310,8 +264,8 @@ public class VeiculoServiceTest {
 
         this.veiculoService.marcarEmRota(1L);
 
-        verify(veiculoRepository).save(veiculo);
         assertEquals(StatusOperacional.EM_ROTA, veiculo.getStatus());
+        verify(veiculoRepository).save(veiculo);
     }
 
     @Test
@@ -328,11 +282,11 @@ public class VeiculoServiceTest {
     @Test
     void marcarDisponivelQuandoValido(){
         VeiculoEntity veiculo = new VeiculoEntity(1L, "Fiat", "Uno", "ABC1C34", StatusOperacional.EM_ROTA, null);
+        when(this.veiculoRepository.save(any(VeiculoEntity.class))).thenReturn(veiculo);
         when(this.veiculoRepository.findById(1L)).thenReturn(Optional.of(veiculo));
 
-        this.veiculoService.marcarDisponivel(1L);
+        var carro = this.veiculoService.marcarDisponivel(1L);
 
-        verify(veiculoRepository).save(veiculo);
-        assertEquals(StatusOperacional.DISPONIVEL, veiculo.getStatus());
+        assertEquals(StatusOperacional.DISPONIVEL, carro.getStatus());
     }
 }

@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -37,4 +39,15 @@ public class UsuarioServiceTest {
         when(usuarioRepository.findByNomeIgnoreCase("Joao"))
                 .thenReturn(usuario);
     }
+
+    @Test
+    void cenario01() {
+
+        Assertions.assertThrows(
+                ResponseStatusException.class,
+                () -> usuarioService.login("Joao", "999")
+        );
+    }
+
+
 }

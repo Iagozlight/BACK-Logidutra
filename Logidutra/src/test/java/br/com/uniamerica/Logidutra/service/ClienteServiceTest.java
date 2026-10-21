@@ -21,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.swing.*;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
@@ -54,7 +56,32 @@ public class ClienteServiceTest {
     }
 
     @Test
-    @DisplayName("A entidade cliente precisa ser salva corretamente e com sucesso.")
+    void rejeitaCep() {
+        ViaCepResponse cepInvalido = new ViaCepResponse(null, null, null, null, true);
+        when(viaCepClient.buscarPorCep(clienteRequest.cep())).thenReturn(cepInvalido);
+
+        ResponseStatusException excecao = Assertions.assertThrows(ResponseStatusException.class, () -> clienteService.salvar(clienteRequest, usuarioAdmin));
+
+        Assertions.assertEquals(cepInvalido, excecao.getReason());
+        Assertions.assertTrue(excecao.getReason().contains("o cep não foi encontrado"));
+
+        verify(roleService).validarRole(1L, Role.ADMIN);
+        verify(clienteRepository, never()).save(any());
+    }
+
+    @Test
+     void aceitarCep() {
+        ViaCepResponse cepValido = new ViaCepResponse("85876113", "Gabriel Hoepers", "Parque dos Estados", "Santa Terezinha de Itaipu", false);
+        when(viaCepClient.buscarPorCep(clienteRequest.cep())).thenReturn(cepValido);
+
+        Assertions.assertDoesNotThrow(() -> clienteService.salvar(clienteRequest, usuarioAdmin));
+
+
+        verify(roleService).validarRole(1L, Role.ADMIN);
+        verify(clienteRepository, never()).save(any());
+    }
+
+    @Test
     void salvar_clienteCorretamente() {
         when(viaCepClient.buscarPorCep(clienteRequest.cep())).thenReturn(viaCepResponse);
         when(clienteRepository.save(any(ClienteEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -72,11 +99,10 @@ public class ClienteServiceTest {
         verify(roleService).validarRole(1L, Role.ADMIN);
         verify(clienteRepository).save(any(ClienteEntity.class));
         verify(viaCepClient).buscarPorCep(clienteRequest.cep());
-        verifyNoMoreInteractions(viaCepClient, roleService);
+        verifyNoMoreInteractions(viaCepClient, roleService, clienteRepository );
     }
 
     @Test
-    @DisplayName("Não deve salvar cliente quando o usuário não tiver permissão de ADMIN")
     void naoSalvar_cliente() {
         doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado")).when(roleService).validarRole(1L, Role.ADMIN);
 

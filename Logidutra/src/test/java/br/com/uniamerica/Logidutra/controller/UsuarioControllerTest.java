@@ -10,7 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.server.ResponseStatusException;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -78,6 +80,29 @@ public class UsuarioControllerTest {
 
         Assertions.assertEquals(
                 HttpStatus.OK,
+                response.getStatusCode()
+        );
+    }
+
+    @Test
+    void cenario04() {
+
+        doThrow(
+                new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuário não encontrado"
+                )
+        ).when(usuarioService)
+                .redefinirSenha("Joao", "nova123");
+
+        ResponseEntity<?> response =
+                usuarioController.redefinirSenha(
+                        "Joao",
+                        "nova123"
+                );
+
+        Assertions.assertEquals(
+                HttpStatus.NOT_FOUND,
                 response.getStatusCode()
         );
     }

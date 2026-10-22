@@ -132,4 +132,17 @@ public class UsuarioServiceTest {
         );
     }
 
+    @Test
+    void cenario06() {
+
+        when(usuarioRepository.findById(99L))
+                .thenReturn(Optional.empty());
+
+        Assertions.assertThrows(
+                ResponseStatusException.class,
+                () -> usuarioService.buscarPorId(99L)
+        );
+    }
+
+
 }

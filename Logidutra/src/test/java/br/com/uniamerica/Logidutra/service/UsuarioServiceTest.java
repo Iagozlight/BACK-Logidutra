@@ -3,6 +3,7 @@ package br.com.uniamerica.Logidutra.service;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.enums.Role;
+import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -85,6 +86,44 @@ public class UsuarioServiceTest {
         Usuario resultado = usuarioService.buscarPorId(1L);
 
         Assertions.assertEquals(1L, resultado.getId());
+    }
+
+    @Test
+    void cenario04() {
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setStatus(StatusOperacional.DISPONIVEL);
+
+        when(usuarioRepository.findById(1L))
+                .thenReturn(Optional.of(usuario));
+
+        when(usuarioRepository.save(any()))
+                .thenReturn(usuario);
+
+        Usuario resultado =
+                usuarioService.marcarEmRota(1L);
+
+        Assertions.assertEquals(
+                StatusOperacional.EM_ROTA,
+                resultado.getStatus()
+        );
+    }
+
+    @Test
+    void cenario05() {
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        usuario.setStatus(StatusOperacional.EM_ROTA);
+
+        when(usuarioRepository.findById(1L))
+                .thenReturn(Optional.of(usuario));
+
+        Assertions.assertThrows(
+                ResponseStatusException.class,
+                () -> usuarioService.marcarEmRota(1L)
+        );
     }
 
 }

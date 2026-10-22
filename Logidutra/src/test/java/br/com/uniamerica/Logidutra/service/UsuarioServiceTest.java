@@ -1,5 +1,6 @@
 package br.com.uniamerica.Logidutra.service;
 
+import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.enums.Role;
 import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
@@ -13,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -49,5 +52,25 @@ public class UsuarioServiceTest {
         );
     }
 
+    @Test
+    void cenario02() {
+
+        Usuario admin = new Usuario();
+        admin.setId(1L);
+
+        when(usuarioRepository.existsByNomeIgnoreCase(any()))
+                .thenReturn(false);
+
+        when(usuarioRepository.save(any()))
+                .thenReturn(new Usuario());
+
+        usuarioService.salvar(
+                new UsuarioRequest("Joao", "123", 20, Role.USER),
+                admin
+        );
+
+        verify(roleService)
+                .validarRole(1L, Role.ADMIN);
+    }
 
 }

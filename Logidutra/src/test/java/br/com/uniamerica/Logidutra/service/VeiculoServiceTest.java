@@ -23,12 +23,12 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class VeiculoServiceTest {
     @Mock
-    private VeiculoRepository veiculoRepository;
+    VeiculoRepository veiculoRepository;
     @Mock
-    private RoleService roleService;
+    RoleService roleService;
 
     @InjectMocks
-    private VeiculoService veiculoService;
+    VeiculoService veiculoService;
 
     @Test
     void rejeitaPlacaInvalida(){

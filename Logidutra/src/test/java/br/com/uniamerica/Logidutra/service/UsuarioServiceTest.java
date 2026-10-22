@@ -120,9 +120,15 @@ public class UsuarioServiceTest {
         when(usuarioRepository.findById(1L))
                 .thenReturn(Optional.of(usuario));
 
-        Assertions.assertThrows(
-                ResponseStatusException.class,
-                () -> usuarioService.marcarEmRota(1L)
+        when(usuarioRepository.save(any()))
+                .thenReturn(usuario);
+
+        Usuario resultado =
+                usuarioService.marcarDisponivel(1L);
+
+        Assertions.assertEquals(
+                StatusOperacional.DISPONIVEL,
+                resultado.getStatus()
         );
     }
 

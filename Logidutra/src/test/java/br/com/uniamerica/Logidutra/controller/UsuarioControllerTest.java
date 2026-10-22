@@ -67,4 +67,19 @@ public class UsuarioControllerTest {
         );
     }
 
+    @Test
+    void cenario03() {
+
+        ResponseEntity<?> response =
+                usuarioController.redefinirSenha(
+                        "Joao",
+                        "nova123"
+                );
+
+        Assertions.assertEquals(
+                HttpStatus.OK,
+                response.getStatusCode()
+        );
+    }
+
 }

@@ -41,4 +41,30 @@ public class UsuarioControllerTest {
         );
     }
 
+    @Test
+    void cenario02() {
+
+        Usuario usuario = new Usuario();
+
+        usuario.setId(1L);
+        usuario.setNome("Joao");
+        usuario.setSenha("123");
+
+        when(usuarioService.login("Joao", "123"))
+                .thenReturn(usuario);
+
+        ResponseEntity<UsuarioResponse> response =
+                usuarioController.login("Joao", "123");
+
+        Assertions.assertEquals(
+                HttpStatus.OK,
+                response.getStatusCode()
+        );
+
+        Assertions.assertEquals(
+                "Joao",
+                response.getBody().nome()
+        );
+    }
+
 }

@@ -73,4 +73,18 @@ public class UsuarioServiceTest {
                 .validarRole(1L, Role.ADMIN);
     }
 
+    @Test
+    void cenario03() {
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+
+        when(usuarioRepository.findById(1L))
+                .thenReturn(Optional.of(usuario));
+
+        Usuario resultado = usuarioService.buscarPorId(1L);
+
+        Assertions.assertEquals(1L, resultado.getId());
+    }
+
 }

@@ -83,6 +83,7 @@ public class RomaneiosServiceTest {
         verify(romaneiosRepository).save(any(Romaneios.class));
     }
 
+    @Test
     void cenario02_listarRomaneios(){
         Romaneios romaneios1 = new Romaneios();
         romaneios1.setId(1L);
@@ -103,4 +104,6 @@ public class RomaneiosServiceTest {
 
         verify(romaneiosRepository).findAll();
     }
+
+
 }

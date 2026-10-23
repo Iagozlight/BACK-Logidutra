@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.util.Assert;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -80,5 +81,26 @@ public class RomaneiosServiceTest {
         Assertions.assertNotNull(resultado);
         Assertions.assertEquals(1L, resultado.getId());
         verify(romaneiosRepository).save(any(Romaneios.class));
+    }
+
+    void cenario02_listarRomaneios(){
+        Romaneios romaneios1 = new Romaneios();
+        romaneios1.setId(1L);
+
+        Romaneios romaneios2 = new Romaneios();
+        romaneios2.setId(2L);
+
+        List<Romaneios> romaneios = List.of(romaneios1, romaneios2);
+
+        when(romaneiosRepository.findAll()).thenReturn(romaneios);
+
+        List<Romaneios> resultado = romaneiosService.listar();
+
+        Assertions.assertNotNull(resultado);
+        Assertions.assertEquals(2, resultado.size());
+        Assertions.assertEquals(1L, resultado.get(0).getId());
+        Assertions.assertEquals(2L, resultado.get(1).getId());
+
+        verify(romaneiosRepository).findAll();
     }
 }

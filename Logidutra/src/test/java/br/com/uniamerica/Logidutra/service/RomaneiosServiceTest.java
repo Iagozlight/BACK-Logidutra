@@ -105,5 +105,21 @@ public class RomaneiosServiceTest {
         verify(romaneiosRepository).findAll();
     }
 
+    @Test
+    void cenario03_buscarRomaneioPorId(){
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosRepository.findById(1L))
+                .thenReturn(java.util.Optional.of(romaneio));
+
+        Romaneios resultado = romaneiosService.buscarPorId(1L);
+
+        Assertions.assertNotNull(resultado);
+        Assertions.assertEquals(1L, resultado.getId());
+
+        verify(romaneiosRepository).findAllById(1L);
+    }
+
 
 }

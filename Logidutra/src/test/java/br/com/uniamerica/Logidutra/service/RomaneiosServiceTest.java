@@ -141,4 +141,40 @@ public class RomaneiosServiceTest {
         verify(romaneiosRepository).findById(99L);
     }
 
+    @Test
+    void cenario05_atualizarRomaneioComDadosValidos(){
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosRepository.findById(1L))
+                .thenReturn(java.util.Optional.of(romaneio));
+
+        Romaneios romaneioAtualizado = new Romaneios();
+        romaneioAtualizado.setId(1L);
+
+        when(romaneiosRepository.save(any(Romaneios.class)))
+                .thenReturn(romaneioAtualizado);
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                1L,
+                1L,
+                List.of(1L),
+                null
+        );
+
+        Romaneios resultado = romaneiosService.atualizar(1L, request);
+
+        Assertions.assertNull(resultado);
+        Assertions.assertEquals(1L, resultado.getId());
+
+        verify(romaneiosRepository).findAllById(1L);
+        verify(romaneiosRepository).save(any(Romaneios.class));
+        verify(veiculoService).buscarPorId(1L);
+        verify(usuarioService).buscarPorId(1L);
+        verify(clienteRepository).findAllById(List.of(1L));
+
+    }
+
 }

@@ -5,6 +5,7 @@ import br.com.uniamerica.Logidutra.controller.dto.VeiculoResponse;
 import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
+import br.com.uniamerica.Logidutra.service.VeiculoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,8 @@ public class VeiculoControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
     }
 
+
+
     @Test
     void VeiculoControllerSalvarRetornaBadRequestComDadosInvalidados(){
         VeiculoEntity veiculo = new VeiculoEntity(1, "Fiat", "Uno", "ABC4F42", StatusOperacional.DISPONIVEL, null);
@@ -67,6 +70,16 @@ public class VeiculoControllerTest {
         ResponseEntity<VeiculoResponse> resposta = this.veiculoController.salvar(new VeiculoRequest("", "", ""), 1L);
 
         assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
+    }
+
+    @Test
+    void VeiculoControllerListarRetornaOk(){
+        List<VeiculoEntity> veiculos = List.of(new VeiculoEntity());
+        when(veiculoRepository.findAll()).thenReturn(veiculos);
+
+        ResponseEntity<List<VeiculoResponse>> resposta = this.veiculoController.listar();
+
+        assertEquals(HttpStatus.OK, resposta.getStatusCode());
     }
 
     @Test
@@ -121,6 +134,15 @@ public class VeiculoControllerTest {
     }
 
     @Test
+    void VeiculoControllerAtualizarRetornaNotFoundComIdInexistente(){
+        when(veiculoRepository.findById(anyLong())).thenThrow(NoSuchElementException.class);
+
+        ResponseEntity<VeiculoResponse> resposta = this.veiculoController.atualizarVeiculo(1L, new VeiculoRequest("Fiat", "Uno", "ABC4F42"), 1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
+    }
+
+    @Test
     void VeiculoControllerAtualizarParcialRetornaOk(){
         VeiculoEntity veiculo = new VeiculoEntity(1, "Fiat", "Uno", "ABC4F42", StatusOperacional.DISPONIVEL, null);
         when(veiculoRepository.findById(anyLong())).thenReturn(Optional.of(veiculo));
@@ -153,6 +175,15 @@ public class VeiculoControllerTest {
     }
 
     @Test
+    void VeiculoControllerAtualizarParcialRetornaNotFoundComIdInexistente(){
+        when(veiculoRepository.findById(anyLong())).thenThrow(NoSuchElementException.class);
+
+        ResponseEntity<VeiculoResponse> resposta = this.veiculoController.atualizarParcialVeiculo(1L, new VeiculoRequest("Fiat", "Uno", "ABC4F42"), 1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
+    }
+
+    @Test
     void VeiculoControllerMarcarDisponivelRetornaOk(){
         VeiculoEntity veiculo = new VeiculoEntity(1, "Fiat", "Uno", "ABC4F42", StatusOperacional.EM_ROTA, List.of());
         when(veiculoRepository.findById(anyLong())).thenReturn(Optional.of(veiculo));
@@ -161,6 +192,16 @@ public class VeiculoControllerTest {
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
     }
+
+    @Test
+    void VeiculoControllerMarcarDisponivelRetornaNotFoundComIdInexistente(){
+        when(veiculoRepository.findById(anyLong())).thenThrow(NoSuchElementException.class);
+
+        ResponseEntity<VeiculoResponse> resposta = this.veiculoController.marcarDisponivel(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
+    }
+
     @Test
     void VeiculoControllerMarcarEmRotaRetornaOk(){
         VeiculoEntity veiculo = new VeiculoEntity(1, "Fiat", "Uno", "ABC4F42", StatusOperacional.DISPONIVEL, List.of());
@@ -171,6 +212,16 @@ public class VeiculoControllerTest {
 
         assertEquals(HttpStatus.OK, resposta.getStatusCode());
     }
+
+    @Test
+    void VeiculoControllerMarcarEmRotaRetornaNotFoundComIdInexistente(){
+        when(veiculoRepository.findById(anyLong())).thenThrow(NoSuchElementException.class);
+
+        ResponseEntity<VeiculoResponse> resposta = this.veiculoController.marcarEmRota(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, resposta.getStatusCode());
+    }
+
     @Test
     void VeiculoControllerMarcarEmRotaRetornaConfict(){
         VeiculoEntity veiculo = new VeiculoEntity(1, "Fiat", "Uno", "ABC4F42", StatusOperacional.EM_ROTA, List.of());

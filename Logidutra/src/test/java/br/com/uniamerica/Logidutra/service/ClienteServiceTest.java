@@ -23,7 +23,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.swing.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
@@ -79,7 +81,7 @@ public class ClienteServiceTest {
         assertEquals("Gabriel", cliente.getNome());
         assertEquals("123.456.789-00", cliente.getCpf());
         assertEquals("45999999999", cliente.getTelefone());
-        assertEquals("85850000", cliente.getCep());
+        assertEquals("85850-000", cliente.getCep());
         assertEquals("Rua das Flores", cliente.getLogradouro());
         assertEquals("Centro", cliente.getBairro());
         assertEquals("Foz do Iguaçu", cliente.getCidade());
@@ -88,6 +90,54 @@ public class ClienteServiceTest {
         verify(clienteRepository).save(any(ClienteEntity.class));
     }
 
+    @Test
+    void CepNaoEncontrado() {
+        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "00000-000");
+        when(viaCepClient.buscarPorCep("00000-000")).thenReturn(cepInvalido);
+
+        ResponseStatusException erro = assertThrows(ResponseStatusException.class, () -> clienteService.salvar(request, usuario));
+
+        assertEquals(HttpStatus.BAD_REQUEST, erro.getStatusCode());
+        assertTrue(erro.getReason().contains("CEP não encontrado"));
+
+        verify(clienteRepository, never()).save(any());
+    }
+
+    @Test
+    void SemCepNull() {
+        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "00000-000");
+        when(viaCepClient.buscarPorCep("00000-000")).thenReturn(null);
+
+        assertThrows(ResponseStatusException.class, () -> clienteService.salvar(request, usuario));
+
+        verify(clienteRepository, never()).save(any());
+    }
+
+    @Test
+    void NaoSalvaFalhaRole() {
+        doThrow(new RuntimeException()).when(roleService).validarRole(1L, Role.ADMIN);
+        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "85850-000");
+
+        assertThrows(RuntimeException.class, () -> clienteService.salvar(request, usuario));
+
+        verifyNoInteractions(viaCepClient);
+        verify(clienteRepository, never()).save(any());
+    }
+
+    @Test
+    void listarRetornaTodosOsClientes() {
+        when(clienteRepository.findAll()).thenReturn(List.of(clienteExistente()));
+
+        var clientes = clienteService.listar();
+
+        assertEquals(1, clientes.size());
+        assertEquals("Gabriel", clientes.get(0).getNome());
+    }
+
 
 
 }
+
+
+
+

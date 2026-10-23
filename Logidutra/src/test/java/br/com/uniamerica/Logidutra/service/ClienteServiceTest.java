@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.swing.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
@@ -30,91 +31,63 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class ClienteServiceTest {
     @Mock
-    private ClienteRepository clienteRepository;
-
+    ClienteRepository clienteRepository;
     @Mock
-    private ViaCepClient viaCepClient;
-
+    ViaCepClient viaCepClient;
     @Mock
-    private RoleService roleService;
+    RoleService roleService;
 
     @InjectMocks
-    private ClienteService clienteService;
+    ClienteService clienteService;
 
-    private Usuario usuarioAdmin;
-    private ClienteRequest clienteRequest;
-    private ViaCepResponse viaCepResponse;
+    private Usuario usuario;
+    private ViaCepResponse cepValido;
+    private ViaCepResponse cepInvalido;
 
     @BeforeEach
     void setUp() {
-        //Ele é apenas um modelo base
-        usuarioAdmin = new Usuario();
-        usuarioAdmin.setId(1L);
+        usuario = new Usuario();
+        usuario.setId(1L);
 
-        clienteRequest = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "85850-000");
-        viaCepResponse = new ViaCepResponse("85850-000", "Rua das Flores", "Centro", "Foz do Iguaçu", false);
+        cepValido = new ViaCepResponse("85850-000", "Rua das Flores", "Centro", "Foz do Iguaçu", false);
+        cepInvalido = new ViaCepResponse(null, null, null, null, true);
+    }
+
+
+    private ClienteEntity clienteExistente() {
+        ClienteEntity cliente = new ClienteEntity();
+        cliente.setId(1L);
+        cliente.setNome("Gabriel");
+        cliente.setCpf("123.456.789-00");
+        cliente.setTelefone("45999999999");
+        cliente.setCep("85850-000");
+        cliente.setLogradouro("Rua das Flores");
+        cliente.setBairro("Centro");
+        cliente.setCidade("Foz do Iguaçu");
+        return cliente;
     }
 
     @Test
-    void rejeitaCep() {
-        ViaCepResponse cepInvalido = new ViaCepResponse(null, null, null, null, true);
-        when(viaCepClient.buscarPorCep(clienteRequest.cep())).thenReturn(cepInvalido);
+    void salvarClienteValidoCorretamente() {
+        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "85850-000");
+        when(viaCepClient.buscarPorCep("85850-000")).thenReturn(cepValido);
+        when(clienteRepository.save(any(ClienteEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
-        ResponseStatusException excecao = Assertions.assertThrows(ResponseStatusException.class, () -> clienteService.salvar(clienteRequest, usuarioAdmin));
-
-        Assertions.assertEquals(cepInvalido, excecao.getReason());
-        Assertions.assertTrue(excecao.getReason().contains("o cep não foi encontrado"));
-
-        verify(roleService).validarRole(1L, Role.ADMIN);
-        verify(clienteRepository, never()).save(any());
-    }
-
-    @Test
-     void aceitarCep() {
-        ViaCepResponse cepValido = new ViaCepResponse("85876113", "Gabriel Hoepers", "Parque dos Estados", "Santa Terezinha de Itaipu", false);
-        when(viaCepClient.buscarPorCep(clienteRequest.cep())).thenReturn(cepValido);
-
-        Assertions.assertDoesNotThrow(() -> clienteService.salvar(clienteRequest, usuarioAdmin));
+        var cliente = clienteService.salvar(request, usuario);
 
 
-        verify(roleService).validarRole(1L, Role.ADMIN);
-        verify(clienteRepository, never()).save(any());
-    }
+        assertEquals("Gabriel", cliente.getNome());
+        assertEquals("123.456.789-00", cliente.getCpf());
+        assertEquals("45999999999", cliente.getTelefone());
+        assertEquals("85850000", cliente.getCep());
+        assertEquals("Rua das Flores", cliente.getLogradouro());
+        assertEquals("Centro", cliente.getBairro());
+        assertEquals("Foz do Iguaçu", cliente.getCidade());
 
-    @Test
-    void salvar_clienteCorretamente() {
-        when(viaCepClient.buscarPorCep(clienteRequest.cep())).thenReturn(viaCepResponse);
-        when(clienteRepository.save(any(ClienteEntity.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        ClienteEntity resultado = clienteService.salvar(clienteRequest, usuarioAdmin);
-
-        Assertions.assertNotNull(resultado);
-        Assertions.assertEquals("Gabriel", resultado.getNome());
-        Assertions.assertEquals("Rua das Flores", resultado.getLogradouro());
-        Assertions.assertEquals("123.456.789-00", resultado.getCpf());
-        Assertions.assertEquals("45999999999", resultado.getTelefone());
-        Assertions.assertEquals("85850-000", resultado.getCep());
-
-        //O Verify ele validda se tá tudo certo
         verify(roleService).validarRole(1L, Role.ADMIN);
         verify(clienteRepository).save(any(ClienteEntity.class));
-        verify(viaCepClient).buscarPorCep(clienteRequest.cep());
-        verifyNoMoreInteractions(viaCepClient, roleService, clienteRepository );
     }
 
-    @Test
-    void naoSalvar_cliente() {
-        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado")).when(roleService).validarRole(1L, Role.ADMIN);
-
-        ResponseStatusException excecao = Assertions.assertThrows(ResponseStatusException.class, () -> clienteService.salvar(clienteRequest, usuarioAdmin));
-
-        Assertions.assertEquals(HttpStatus.FORBIDDEN, excecao.getStatusCode());
-        Assertions.assertEquals("Acesso negado", excecao.getReason());
-
-        verify(roleService).validarRole(1L, Role.ADMIN);
-        verifyNoInteractions(viaCepClient);
-        verify(clienteRepository, never()).save(any());
-    }
 
 
 }

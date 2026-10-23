@@ -118,8 +118,27 @@ public class RomaneiosServiceTest {
         Assertions.assertNotNull(resultado);
         Assertions.assertEquals(1L, resultado.getId());
 
-        verify(romaneiosRepository).findAllById(1L);
+        verify(romaneiosRepository).findById(1L);
     }
 
+    @Test
+    void cenario04_buscarRomaneioPorIdInvalido(){
+
+        when(romaneiosRepository.findById(99L))
+                .thenReturn(java.util.Optional.empty());
+
+        org.springframework.web.server.ResponseStatusException exception =
+                Assertions.assertThrows(
+                        org.springframework.web.server.ResponseStatusException.class,
+                        () -> romaneiosService.buscarPorId(99L)
+                );
+
+        Assertions.assertEquals(
+                org.springframework.http.HttpStatus.NOT_FOUND,
+                exception.getStatusCode()
+        );
+
+        verify(romaneiosRepository).findById(99L);
+    }
 
 }

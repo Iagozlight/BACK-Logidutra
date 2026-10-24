@@ -52,4 +52,22 @@ public class RomaneiosControllerTest {
         Assertions.assertEquals(HttpStatus.CREATED, resposta.getStatusCode());
         verify(romaneiosService).salvar(request);
     }
+
+    @Test
+    void cenario02_listarRomaneiosRetornaOk(){
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.listar())
+                .thenReturn(List.of(romaneio));
+
+        ResponseEntity<List<RomaneiosResponse>> resposta =
+                romaneiosController.listar();
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+        Assertions.assertNotNull(resposta.getBody());
+        Assertions.assertEquals(1, resposta.getBody().size());
+
+        verify(romaneiosService).listar();
+    }
 }

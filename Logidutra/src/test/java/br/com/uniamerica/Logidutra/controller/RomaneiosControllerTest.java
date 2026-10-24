@@ -70,4 +70,21 @@ public class RomaneiosControllerTest {
 
         verify(romaneiosService).listar();
     }
+
+    @Test
+    void cenario03_buscarRomaneioPorIdRetornaOk(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.buscarPorId(1L))
+                .thenReturn(romaneio);
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.buscarPorId(1L);
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+
+        verify(romaneiosService).buscarPorId(1L)
+    }
 }

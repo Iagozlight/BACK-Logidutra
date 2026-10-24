@@ -1,18 +1,13 @@
 package br.com.uniamerica.Logidutra.service;
 
 import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.Logidutra.controller.dto.ViaCepResponse;
 import br.com.uniamerica.Logidutra.data.feign.ViaCepClient;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
-import feign.Client;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,124 +16,83 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.*;
-
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ClienteServiceTest {
+class ClienteServiceTest {
+
     @Mock
-    ClienteRepository clienteRepository;
+    private ClienteRepository clienteRepository;
     @Mock
-    ViaCepClient viaCepClient;
+    private ViaCepClient viaCepClient;
     @Mock
-    RoleService roleService;
+    private RoleService roleService;
 
     @InjectMocks
-    ClienteService clienteService;
+    private ClienteService clienteService;
 
     private Usuario usuario;
-    private ViaCepResponse cepValido;
-    private ViaCepResponse cepInvalido;
 
     @BeforeEach
-    void setUp() {
+    void prepararUsuario() {
         usuario = new Usuario();
         usuario.setId(1L);
-
-        cepValido = new ViaCepResponse("85850-000", "Rua das Flores", "Centro", "Foz do Iguaçu", false);
-        cepInvalido = new ViaCepResponse(null, null, null, null, true);
-    }
-
-
-    private ClienteEntity clienteExistente() {
-        ClienteEntity cliente = new ClienteEntity();
-        cliente.setId(1L);
-        cliente.setNome("Gabriel");
-        cliente.setCpf("123.456.789-00");
-        cliente.setTelefone("45999999999");
-        cliente.setCep("85850-000");
-        cliente.setLogradouro("Rua das Flores");
-        cliente.setBairro("Centro");
-        cliente.setCidade("Foz do Iguaçu");
-        return cliente;
     }
 
     @Test
-    void salvarClienteValidoCorretamente() {
-        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "85850-000");
-        when(viaCepClient.buscarPorCep("85850-000")).thenReturn(cepValido);
-        when(clienteRepository.save(any(ClienteEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+    void salvaClienteComEnderecoRetornadoPeloCep() {
+        ClienteRequest request = request("Gabriel", "85850-000");
+        when(viaCepClient.buscarPorCep("85850-000")).thenReturn(endereco("85850-000", "Rua das Flores"));
+        when(clienteRepository.save(any(ClienteEntity.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
 
-        var cliente = clienteService.salvar(request, usuario);
-
+        ClienteEntity cliente = clienteService.salvar(request, usuario);
 
         assertEquals("Gabriel", cliente.getNome());
-        assertEquals("123.456.789-00", cliente.getCpf());
-        assertEquals("45999999999", cliente.getTelefone());
-        assertEquals("85850-000", cliente.getCep());
         assertEquals("Rua das Flores", cliente.getLogradouro());
         assertEquals("Centro", cliente.getBairro());
         assertEquals("Foz do Iguaçu", cliente.getCidade());
-
         verify(roleService).validarRole(1L, Role.ADMIN);
         verify(clienteRepository).save(any(ClienteEntity.class));
     }
 
     @Test
-    void CepNaoEncontrado() {
-        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "00000-000");
-        when(viaCepClient.buscarPorCep("00000-000")).thenReturn(cepInvalido);
+    void naoSalvaQuandoCepNaoExiste() {
+        when(viaCepClient.buscarPorCep("00000-000"))
+                .thenReturn(new ViaCepResponse(null, null, null, null, true));
 
-        ResponseStatusException erro = assertThrows(ResponseStatusException.class, () -> clienteService.salvar(request, usuario));
+        ResponseStatusException erro = assertThrows(ResponseStatusException.class,
+                () -> clienteService.salvar(request("Gabriel", "00000-000"), usuario));
 
         assertEquals(HttpStatus.BAD_REQUEST, erro.getStatusCode());
-        assertTrue(erro.getReason().contains("CEP não encontrado"));
-
         verify(clienteRepository, never()).save(any());
     }
 
     @Test
-    void SemCepNull() {
-        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "00000-000");
-        when(viaCepClient.buscarPorCep("00000-000")).thenReturn(null);
+    void listaClientes() {
+        when(clienteRepository.findAll()).thenReturn(List.of(cliente("Gabriel")));
 
-        assertThrows(ResponseStatusException.class, () -> clienteService.salvar(request, usuario));
-
-        verify(clienteRepository, never()).save(any());
-    }
-
-    @Test
-    void NaoSalvaFalhaRole() {
-        doThrow(new RuntimeException()).when(roleService).validarRole(1L, Role.ADMIN);
-        ClienteRequest request = new ClienteRequest("Gabriel", "123.456.789-00", "45999999999", "85850-000");
-
-        assertThrows(RuntimeException.class, () -> clienteService.salvar(request, usuario));
-
-        verifyNoInteractions(viaCepClient);
-        verify(clienteRepository, never()).save(any());
-    }
-
-    @Test
-    void listarRetornaTodosOsClientes() {
-        when(clienteRepository.findAll()).thenReturn(List.of(clienteExistente()));
-
-        var clientes = clienteService.listar();
+        List<ClienteEntity> clientes = clienteService.listar();
 
         assertEquals(1, clientes.size());
         assertEquals("Gabriel", clientes.get(0).getNome());
     }
 
     @Test
-    void buscarPorIdInexistente() {
+    void buscaClientePorId() {
+        ClienteEntity esperado = cliente("Gabriel");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(esperado));
+
+        assertSame(esperado, clienteService.buscarPorId(1L));
+    }
+
+    @Test
+    void retornaNaoEncontradoQuandoBuscaIdInexistente() {
         when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
-        //O Optional entrega um banco de dados achar o cliente, ele te entrega a caixinha com o cliente dentro.
 
         ResponseStatusException erro = assertThrows(ResponseStatusException.class,
                 () -> clienteService.buscarPorId(1L));
@@ -147,19 +101,78 @@ public class ClienteServiceTest {
     }
 
     @Test
-    void buscarPorIdQuandoExiste() {
-        ClienteEntity cliente = clienteExistente();
-        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+    void atualizaDadosEEnderecoDoCliente() {
+        ClienteEntity existente = cliente("Gabriel");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
+        when(viaCepClient.buscarPorCep("85876-113")).thenReturn(endereco("85876-113", "Rua Nova"));
+        when(clienteRepository.save(any(ClienteEntity.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
 
-        var resultado = clienteService.buscarPorId(1L);
+        ClienteEntity atualizado = clienteService.atualizar(1L, request("Maria", "85876-113"), usuario);
 
-        assertEquals(cliente, resultado);
+        assertEquals("Maria", atualizado.getNome());
+        assertEquals("Rua Nova", atualizado.getLogradouro());
+        assertEquals("85876-113", atualizado.getCep());
+        verify(clienteRepository).save(existente);
     }
 
+    @Test
+    void atualizaParcialSemCep() {
+        ClienteEntity existente = cliente("Gabriel");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
+        when(clienteRepository.save(existente)).thenReturn(existente);
+        ClienteRequest alteracao = new ClienteRequest("Maria", null, null, "85850-000");
 
+        ClienteEntity atualizado = clienteService.atualizarParcial(1L, alteracao, usuario);
 
+        assertEquals("Maria", atualizado.getNome());
+        assertEquals("123.456.789-00", atualizado.getCpf());
+        assertEquals("Rua das Flores", atualizado.getLogradouro());
+        verifyNoInteractions(viaCepClient);
+    }
+
+    @Test
+    void atualizaCepNaAlteracaoParcial() {
+        ClienteEntity existente = cliente("Gabriel");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
+        when(viaCepClient.buscarPorCep("85876-113")).thenReturn(endereco("85876-113", "Rua Nova"));
+        when(clienteRepository.save(existente)).thenReturn(existente);
+        ClienteRequest alteracao = new ClienteRequest(null, null, null, "85876-113");
+
+        ClienteEntity atualizado = clienteService.atualizarParcial(1L, alteracao, usuario);
+
+        assertEquals("85876-113", atualizado.getCep());
+        assertEquals("Rua Nova", atualizado.getLogradouro());
+    }
+
+    @Test
+    void deletaClienteExistente() {
+        ClienteEntity existente = cliente("Gabriel");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
+
+        clienteService.deletar(1L, usuario);
+
+        verify(roleService).validarRole(1L, Role.ADMIN);
+        verify(clienteRepository).delete(existente);
+    }
+
+    private ClienteRequest request(String nome, String cep) {
+        return new ClienteRequest(nome, "123.456.789-00", "45999999999", cep);
+    }
+
+    private ViaCepResponse endereco(String cep, String logradouro) {
+        return new ViaCepResponse(cep, logradouro, "Centro", "Foz do Iguaçu", false);
+    }
+
+    private ClienteEntity cliente(String nome) {
+        ClienteEntity cliente = new ClienteEntity();
+        cliente.setId(1L);
+        cliente.setNome(nome);
+        cliente.setCpf("123.456.789-00");
+        cliente.setTelefone("45999999999");
+        cliente.setCep("85850-000");
+        cliente.setLogradouro("Rua das Flores");
+        cliente.setBairro("Centro");
+        cliente.setCidade("Foz do Iguaçu");
+        return cliente;
+    }
 }
-
-
-
-

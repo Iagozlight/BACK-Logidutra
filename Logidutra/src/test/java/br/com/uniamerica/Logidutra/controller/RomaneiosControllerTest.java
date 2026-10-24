@@ -17,8 +17,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class RomaneiosControllerTest {
@@ -86,7 +85,7 @@ public class RomaneiosControllerTest {
 
         Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
 
-        verify(romaneiosService).buscarPorId(1L)
+        verify(romaneiosService).buscarPorId(1L);
     }
 
     @Test
@@ -114,5 +113,47 @@ public class RomaneiosControllerTest {
         Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
 
         verify(romaneiosService).atualizar(1L, request);
+    }
+
+    @Test
+    void cenario05_RetornoAtualizarParcial(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.atualizarParcial(
+                eq(1L), any(RomaneiosRequest.class)))
+                .thenReturn(romaneio);
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                null,
+                null
+        );
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.atualizarParcial(1L, request);
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+
+        verify(romaneiosService).atualizarParcial(1L, request);
+    }
+
+    @Test
+    void cenario06_RetornoNoContentRomaneio(){
+        doNothing().when(romaneiosService).deletarPorID(1L);
+
+        ResponseEntity<?> resposta =
+                romaneiosController.deletar(1L);
+
+        Assertions.assertEquals(
+                HttpStatus.NO_CONTENT,
+                resposta.getStatusCode()
+        );
+
+        verify(romaneiosService).deletarPorID(1L);
     }
 }

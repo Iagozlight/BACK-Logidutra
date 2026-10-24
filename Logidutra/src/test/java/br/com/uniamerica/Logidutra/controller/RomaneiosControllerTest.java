@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -86,5 +87,32 @@ public class RomaneiosControllerTest {
         Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
 
         verify(romaneiosService).buscarPorId(1L)
+    }
+
+    @Test
+    void cenario04_RetornoatualizarRomaneios(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.atualizar(
+                eq(1L), any(RomaneiosRequest.class)))
+                .thenReturn(romaneio);
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                1L,
+                1l,
+                List.of(1L),
+                null
+        );
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.atualizar(1L, request);
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+
+        verify(romaneiosService).atualizar(1L, request);
     }
 }

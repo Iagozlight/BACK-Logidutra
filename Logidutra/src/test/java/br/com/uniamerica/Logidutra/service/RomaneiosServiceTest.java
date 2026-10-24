@@ -20,8 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class RomaneiosServiceTest {
@@ -175,6 +174,48 @@ public class RomaneiosServiceTest {
         verify(usuarioService).buscarPorId(1L);
         verify(clienteRepository).findAllById(List.of(1L));
 
+    }
+
+    @Test
+    void cenario06_atualizaParcialRomaneio(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosRepository.findById(1L))
+                .thenReturn(java.util.Optional.of(romaneio));
+
+        Romaneios romaneioAtualizado = new Romaneios();
+        romaneioAtualizado.setId(1L);
+
+        when(romaneiosRepository.save(any(Romaneios.class)))
+                .thenReturn(romaneioAtualizado);
+
+        LocalDate novaData = LocalDate.now();
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                novaData,
+                null,
+                null,
+                null,
+                null
+        );
+
+        Romaneios resultado =
+                romaneiosService.atualizarParcial(1L, request);
+
+        Assertions.assertNotNull(resultado);
+        Assertions.assertEquals(1L,resultado.getId());
+        Assertions.assertEquals(novaData, romaneio.getData());
+
+        verify(romaneiosRepository).findById(1L);
+        verify(romaneiosRepository).save(any(Romaneios.class));
+
+        verify(veiculoService, never()).buscarPorId(anyLong());
+        verify(usuarioService, never()).buscarPorId(anyLong());
+        verify(clienteRepository, never()).findAllById(anyList());
+        verify(produtoRepository, never()).findAllById(anyList());
     }
 
 }

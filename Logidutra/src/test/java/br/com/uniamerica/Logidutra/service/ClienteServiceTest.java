@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.swing.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -132,6 +133,27 @@ public class ClienteServiceTest {
 
         assertEquals(1, clientes.size());
         assertEquals("Gabriel", clientes.get(0).getNome());
+    }
+
+    @Test
+    void buscarPorIdInexistente() {
+        when(clienteRepository.findById(1L)).thenReturn(Optional.empty());
+        //O Optional entrega um banco de dados achar o cliente, ele te entrega a caixinha com o cliente dentro.
+
+        ResponseStatusException erro = assertThrows(ResponseStatusException.class,
+                () -> clienteService.buscarPorId(1L));
+
+        assertEquals(HttpStatus.NOT_FOUND, erro.getStatusCode());
+    }
+
+    @Test
+    void buscarPorIdQuandoExiste() {
+        ClienteEntity cliente = clienteExistente();
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
+
+        var resultado = clienteService.buscarPorId(1L);
+
+        assertEquals(cliente, resultado);
     }
 
 

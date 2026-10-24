@@ -218,4 +218,21 @@ public class RomaneiosServiceTest {
         verify(produtoRepository, never()).findAllById(anyList());
     }
 
+
+    @Test
+    void cenario07_deletarRomaneioComProdutos() {
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosRepository.findById(1L))
+                .thenReturn(java.util.Optional.of(romaneio));
+
+        romaneiosService.deletarPorID(1L);
+
+        verify(romaneiosRepository).findById(1L);
+        verify(produtoRepository, never()).deleteAll(anyList());
+        verify(romaneiosRepository).delete(romaneio);
+    }
+
 }

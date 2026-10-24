@@ -1,0 +1,159 @@
+package br.com.uniamerica.Logidutra.controller;
+
+import br.com.uniamerica.Logidutra.controller.dto.RomaneiosRequest;
+import br.com.uniamerica.Logidutra.controller.dto.RomaneiosResponse;
+import br.com.uniamerica.Logidutra.entity.Romaneios;
+import br.com.uniamerica.Logidutra.service.RomaneiosService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+@SpringBootTest
+public class RomaneiosControllerTest {
+
+    @Autowired
+    RomaneiosController romaneiosController;
+
+    @MockitoBean
+    RomaneiosService romaneiosService;
+
+    @Test
+    void cenario01_salvarRomaneioRetornaCreated(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.salvar(any(RomaneiosRequest.class)))
+                .thenReturn(romaneio);
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                1L,
+                1l,
+                List.of(1L),
+                null
+        );
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.salvar(request);
+
+        Assertions.assertEquals(HttpStatus.CREATED, resposta.getStatusCode());
+        verify(romaneiosService).salvar(request);
+    }
+
+    @Test
+    void cenario02_listarRomaneiosRetornaOk(){
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.listar())
+                .thenReturn(List.of(romaneio));
+
+        ResponseEntity<List<RomaneiosResponse>> resposta =
+                romaneiosController.listar();
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+        Assertions.assertNotNull(resposta.getBody());
+        Assertions.assertEquals(1, resposta.getBody().size());
+
+        verify(romaneiosService).listar();
+    }
+
+    @Test
+    void cenario03_buscarRomaneioPorIdRetornaOk(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.buscarPorId(1L))
+                .thenReturn(romaneio);
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.buscarPorId(1L);
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+
+        verify(romaneiosService).buscarPorId(1L);
+    }
+
+    @Test
+    void cenario04_RetornoatualizarRomaneios(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.atualizar(
+                eq(1L), any(RomaneiosRequest.class)))
+                .thenReturn(romaneio);
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                1L,
+                1l,
+                List.of(1L),
+                null
+        );
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.atualizar(1L, request);
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+
+        verify(romaneiosService).atualizar(1L, request);
+    }
+
+    @Test
+    void cenario05_RetornoAtualizarParcial(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.atualizarParcial(
+                eq(1L), any(RomaneiosRequest.class)))
+                .thenReturn(romaneio);
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                null,
+                null,
+                null,
+                null
+        );
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.atualizarParcial(1L, request);
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+
+        verify(romaneiosService).atualizarParcial(1L, request);
+    }
+
+    @Test
+    void cenario06_RetornoNoContentRomaneio(){
+        doNothing().when(romaneiosService).deletarPorID(1L);
+
+        ResponseEntity<?> resposta =
+                romaneiosController.deletar(1L);
+
+        Assertions.assertEquals(
+                HttpStatus.NO_CONTENT,
+                resposta.getStatusCode()
+        );
+
+        verify(romaneiosService).deletarPorID(1L);
+    }
+}

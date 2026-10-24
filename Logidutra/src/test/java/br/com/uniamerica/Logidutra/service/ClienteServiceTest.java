@@ -101,6 +101,43 @@ class ClienteServiceTest {
     }
 
     @Test
+    void listaVaziaQuandoNaoHaClientes() {
+        when(clienteRepository.findAll()).thenReturn(List.of());
+
+        assertTrue(clienteService.listar().isEmpty());
+    }
+
+    @Test
+    void naoAtualizaClienteQueNaoExiste() {
+        when(clienteRepository.findById(99L)).thenReturn(Optional.empty());
+
+        ResponseStatusException erro = assertThrows(ResponseStatusException.class,
+                () -> clienteService.atualizar(99L, request("Maria", "85850-000"), usuario));
+
+        assertEquals(HttpStatus.NOT_FOUND, erro.getStatusCode());
+        verify(clienteRepository, never()).save(any());
+    }
+
+    @Test
+    void naoDeletaClienteInexistente() {
+        when(clienteRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () -> clienteService.deletar(99L, usuario));
+        verify(clienteRepository, never()).delete(any(ClienteEntity.class));
+    }
+
+    @Test
+    void rejeitaCepNulo() {
+        when(viaCepClient.buscarPorCep("85850-000")).thenReturn(null);
+
+        ResponseStatusException erro = assertThrows(ResponseStatusException.class,
+                () -> clienteService.salvar(request("Gabriel", "85850-000"), usuario));
+
+        assertEquals(HttpStatus.BAD_REQUEST, erro.getStatusCode());
+        verify(clienteRepository, never()).save(any());
+    }
+
+    @Test
     void atualizaDadosEEnderecoDoCliente() {
         ClienteEntity existente = cliente("Gabriel");
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
@@ -142,6 +179,19 @@ class ClienteServiceTest {
 
         assertEquals("85876-113", atualizado.getCep());
         assertEquals("Rua Nova", atualizado.getLogradouro());
+    }
+
+    @Test
+    void alteracaoParcialMantemCepIgualSemConsultarViaCep() {
+        ClienteEntity existente = cliente("Gabriel");
+        when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
+        when(clienteRepository.save(existente)).thenReturn(existente);
+
+        ClienteEntity atualizado = clienteService.atualizarParcial(1L,
+                new ClienteRequest(null, null, "45888888888", "85850-000"), usuario);
+
+        assertEquals("45888888888", atualizado.getTelefone());
+        verifyNoInteractions(viaCepClient);
     }
 
     @Test

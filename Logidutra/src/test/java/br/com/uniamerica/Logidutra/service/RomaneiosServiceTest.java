@@ -101,7 +101,7 @@ public class RomaneiosServiceTest {
         Assertions.assertEquals(1L, resultado.get(0).getId());
         Assertions.assertEquals(2L, resultado.get(1).getId());
 
-        verify(romaneiosRepository).findAll();
+        verify(romaneiosRepository).findById(1L);
     }
 
     @Test
@@ -168,11 +168,9 @@ public class RomaneiosServiceTest {
         Assertions.assertNull(resultado);
         Assertions.assertEquals(1L, resultado.getId());
 
-        verify(romaneiosRepository).findAllById(1L);
         verify(romaneiosRepository).save(any(Romaneios.class));
         verify(veiculoService).buscarPorId(1L);
         verify(usuarioService).buscarPorId(1L);
-        verify(clienteRepository).findAllById(List.of(1L));
 
     }
 

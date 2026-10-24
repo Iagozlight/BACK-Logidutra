@@ -1,0 +1,55 @@
+package br.com.uniamerica.Logidutra.controller;
+
+import br.com.uniamerica.Logidutra.controller.dto.RomaneiosRequest;
+import br.com.uniamerica.Logidutra.controller.dto.RomaneiosResponse;
+import br.com.uniamerica.Logidutra.entity.Romaneios;
+import br.com.uniamerica.Logidutra.service.RomaneiosService;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+public class RomaneiosControllerTest {
+
+    @Autowired
+    RomaneiosController romaneiosController;
+
+    @MockitoBean
+    RomaneiosService romaneiosService;
+
+    @Test
+    void cenario01_salvarRomaneioRetornaCreated(){
+
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        when(romaneiosService.salvar(any(RomaneiosRequest.class)))
+                .thenReturn(romaneio);
+
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                1L,
+                1l,
+                List.of(1L),
+                null
+        );
+
+        ResponseEntity<RomaneiosResponse> resposta =
+                romaneiosController.salvar(request);
+
+        Assertions.assertEquals(HttpStatus.CREATED, resposta.getStatusCode());
+        verify(romaneiosService).salvar(request);
+    }
+}

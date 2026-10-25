@@ -2,11 +2,7 @@ package br.com.uniamerica.Logidutra.controller;
 
 import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
 import br.com.uniamerica.Logidutra.controller.dto.ProdutoResponse;
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import br.com.uniamerica.Logidutra.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +26,7 @@ public class ProdutoController {
         try{
             Produto produto = this.produtoService.salvar(produtoRequest);
             return new ResponseEntity<ProdutoResponse>(ProdutoResponse.de(produto), HttpStatus.CREATED);
-        } catch (Exception e) {
+        }catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -88,7 +84,7 @@ public class ProdutoController {
     public ResponseEntity deletar(@PathVariable long id){
         try {
             this.produtoService.deletarPorID(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

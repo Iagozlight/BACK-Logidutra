@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -103,60 +104,211 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    void cenario04() {
+    void login_deveRetornarUsuarioQuandoCredenciaisCorretas() {
+        when(usuarioRepository.findByNomeIgnoreCase("Joao")).thenReturn(usuario);
 
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
-        usuario.setStatus(StatusOperacional.DISPONIVEL);
+        Usuario resultado = usuarioService.login("  Joao ", "123");
 
-        when(usuarioRepository.findById(1L))
-                .thenReturn(Optional.of(usuario));
-
-        when(usuarioRepository.save(any()))
-                .thenReturn(usuario);
-
-        Usuario resultado =
-                usuarioService.marcarEmRota(1L);
-
-        Assertions.assertEquals(
-                StatusOperacional.EM_ROTA,
-                resultado.getStatus()
-        );
+        Assertions.assertEquals("Joao", resultado.getNome());
     }
 
     @Test
-    void cenario05() {
+    void login_deveLancarUnauthorizedQuandoSenhaIncorreta() {
+        when(usuarioRepository.findByNomeIgnoreCase("Joao")).thenReturn(usuario);
 
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
+        assertStatus(HttpStatus.UNAUTHORIZED, () -> usuarioService.login("Joao", "999"));
+    }
+
+    @Test
+    void login_deveLancarNotFoundQuandoUsuarioNaoExiste() {
+        when(usuarioRepository.findByNomeIgnoreCase("Fantasma")).thenReturn(null);
+
+        assertStatus(HttpStatus.NOT_FOUND, () -> usuarioService.login("Fantasma", "123"));
+    }
+
+    @Test
+    void login_deveLancarNotFoundQuandoNomeNulo() {
+        when(usuarioRepository.findByNomeIgnoreCase("")).thenReturn(null);
+
+        assertStatus(HttpStatus.NOT_FOUND, () -> usuarioService.login(null, "123"));
+    }
+
+    @Test
+    void redefinirSenha_deveAtualizarSenhaDoUsuario() {
+        when(usuarioRepository.findByNomeIgnoreCase("Joao")).thenReturn(usuario);
+
+        usuarioService.redefinirSenha(" Joao ", "nova123");
+
+        Assertions.assertEquals("nova123", usuario.getSenha());
+        verify(usuarioRepository).save(usuario);
+    }
+
+    @Test
+    void redefinirSenha_deveLancarNotFoundQuandoUsuarioNaoExiste() {
+        when(usuarioRepository.findByNomeIgnoreCase("Fantasma")).thenReturn(null);
+
+        assertStatus(HttpStatus.NOT_FOUND, () -> usuarioService.redefinirSenha("Fantasma", "nova"));
+
+        verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void redefinirSenha_deveLancarNotFoundQuandoNomeNulo() {
+        when(usuarioRepository.findByNomeIgnoreCase("")).thenReturn(null);
+
+        assertStatus(HttpStatus.NOT_FOUND, () -> usuarioService.redefinirSenha(null, "nova"));
+    }
+
+    @Test
+    void redefinirSenha_deveLancarForbiddenQuandoUsuarioEAdmin() {
+        when(usuarioRepository.findByNomeIgnoreCase("Admin")).thenReturn(admin);
+
+        assertStatus(HttpStatus.FORBIDDEN, () -> usuarioService.redefinirSenha("Admin", "nova"));
+
+        verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void listar_deveRetornarTodosOsUsuarios() {
+        when(usuarioRepository.findAll()).thenReturn(List.of(usuario, admin));
+
+        List<Usuario> resultado = usuarioService.listar();
+
+        Assertions.assertEquals(2, resultado.size());
+    }
+
+    @Test
+    void buscarPorId_deveRetornarUsuarioQuandoExiste() {
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
+
+        Usuario resultado = usuarioService.buscarPorId(2L);
+
+        Assertions.assertEquals(2L, resultado.getId());
+    }
+
+    @Test
+    void buscarPorId_deveLancarNotFoundQuandoNaoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertStatus(HttpStatus.NOT_FOUND, () -> usuarioService.buscarPorId(99L));
+    }
+
+    @Test
+    void atualizar_deveSubstituirTodosOsCampos() {
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
+
+        Usuario resultado = usuarioService.atualizar(
+                2L, new UsuarioRequest("Pedro", "senhaNova", 40, Role.ADMIN), admin);
+
+        verify(roleService).validarRole(1L, Role.ADMIN);
+        Assertions.assertEquals("Pedro", resultado.getNome());
+        Assertions.assertEquals("senhaNova", resultado.getSenha());
+        Assertions.assertEquals(40, resultado.getIdade());
+        Assertions.assertEquals(Role.ADMIN, resultado.getRole());
+    }
+
+    @Test
+    void atualizar_deveLancarExcecaoQuandoUsuarioLogadoNaoEAdmin() {
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "sem permissão"))
+                .when(roleService).validarRole(2L, Role.ADMIN);
+
+        assertStatus(HttpStatus.FORBIDDEN, () -> usuarioService.atualizar(
+                2L, new UsuarioRequest("Pedro", "x", 40, Role.USER), usuario));
+
+        verify(usuarioRepository, never()).save(any());
+    }
+
+    @Test
+    void atualizar_deveLancarNotFoundQuandoUsuarioNaoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertStatus(HttpStatus.NOT_FOUND, () -> usuarioService.atualizar(
+                99L, new UsuarioRequest("Pedro", "x", 40, Role.USER), admin));
+    }
+
+    @Test
+    void atualizarParcial_deveAtualizarSomenteCamposInformados() {
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
+
+        Usuario resultado = usuarioService.atualizarParcial(
+                2L, new UsuarioRequest(null, null, null, null), admin);
+
+        Assertions.assertEquals("Joao", resultado.getNome());
+        Assertions.assertEquals("123", resultado.getSenha());
+        Assertions.assertEquals(20, resultado.getIdade());
+        Assertions.assertEquals(Role.USER, resultado.getRole());
+    }
+
+    @Test
+    void atualizarParcial_deveAtualizarTodosOsCamposQuandoInformados() {
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
+
+        Usuario resultado = usuarioService.atualizarParcial(
+                2L, new UsuarioRequest("Pedro", "nova", 50, Role.ADMIN), admin);
+
+        verify(roleService).validarRole(1L, Role.ADMIN);
+        Assertions.assertEquals("Pedro", resultado.getNome());
+        Assertions.assertEquals("nova", resultado.getSenha());
+        Assertions.assertEquals(50, resultado.getIdade());
+        Assertions.assertEquals(Role.ADMIN, resultado.getRole());
+    }
+
+    @Test
+    void marcarEmRota_deveAlterarStatusParaEmRota() {
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
+
+        Usuario resultado = usuarioService.marcarEmRota(2L);
+
+        Assertions.assertEquals(StatusOperacional.EM_ROTA, resultado.getStatus());
+    }
+
+    @Test
+    void marcarEmRota_deveLancarConflictQuandoJaEstaEmRota() {
         usuario.setStatus(StatusOperacional.EM_ROTA);
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
 
-        when(usuarioRepository.findById(1L))
-                .thenReturn(Optional.of(usuario));
+        assertStatus(HttpStatus.CONFLICT, () -> usuarioService.marcarEmRota(2L));
 
-        when(usuarioRepository.save(any()))
-                .thenReturn(usuario);
-
-        Usuario resultado =
-                usuarioService.marcarDisponivel(1L);
-
-        Assertions.assertEquals(
-                StatusOperacional.DISPONIVEL,
-                resultado.getStatus()
-        );
+        verify(usuarioRepository, never()).save(any());
     }
 
     @Test
-    void cenario06() {
+    void marcarDisponivel_deveAlterarStatusParaDisponivel() {
+        usuario.setStatus(StatusOperacional.EM_ROTA);
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
 
-        when(usuarioRepository.findById(99L))
-                .thenReturn(Optional.empty());
+        Usuario resultado = usuarioService.marcarDisponivel(2L);
 
-        Assertions.assertThrows(
-                ResponseStatusException.class,
-                () -> usuarioService.buscarPorId(99L)
-        );
+        Assertions.assertEquals(StatusOperacional.DISPONIVEL, resultado.getStatus());
     }
 
+    @Test
+    void deletarPorId_deveRemoverUsuarioQuandoAdmin() {
+        when(usuarioRepository.findById(2L)).thenReturn(Optional.of(usuario));
+
+        usuarioService.deletarPorId(2L, admin);
+
+        verify(roleService).validarRole(1L, Role.ADMIN);
+        verify(usuarioRepository).deleteById(2L);
+    }
+
+    @Test
+    void deletarPorId_deveLancarNotFoundQuandoUsuarioNaoExiste() {
+        when(usuarioRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertStatus(HttpStatus.NOT_FOUND, () -> usuarioService.deletarPorId(99L, admin));
+
+        verify(usuarioRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void deletarPorId_deveLancarExcecaoQuandoUsuarioLogadoNaoEAdmin() {
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "sem permissão"))
+                .when(roleService).validarRole(2L, Role.ADMIN);
+
+        assertStatus(HttpStatus.FORBIDDEN, () -> usuarioService.deletarPorId(3L, usuario));
+
+        verify(usuarioRepository, never()).deleteById(any());
+    }
 
 }

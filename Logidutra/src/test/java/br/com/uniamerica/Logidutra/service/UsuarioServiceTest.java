@@ -8,6 +8,7 @@ import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -61,12 +62,23 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    void cenario01() {
+    void salvar_deveCriarUsuarioComNomeSemEspacosEStatusDisponivel() {
+        when(usuarioRepository.existsByNomeIgnoreCase("Maria")).thenReturn(false);
 
-        Assertions.assertThrows(
-                ResponseStatusException.class,
-                () -> usuarioService.login("Joao", "999")
-        );
+        Usuario resultado = usuarioService.salvar(
+                new UsuarioRequest("  Maria  ", "abc", 25, Role.USER), admin);
+
+        ArgumentCaptor<Usuario> captor = ArgumentCaptor.forClass(Usuario.class);
+        verify(usuarioRepository).save(captor.capture());
+        verify(roleService).validarRole(1L, Role.ADMIN);
+
+        Usuario salvo = captor.getValue();
+        Assertions.assertEquals("Maria", salvo.getNome());
+        Assertions.assertEquals("abc", salvo.getSenha());
+        Assertions.assertEquals(25, salvo.getIdade());
+        Assertions.assertEquals(Role.USER, salvo.getRole());
+        Assertions.assertEquals(StatusOperacional.DISPONIVEL, salvo.getStatus());
+        Assertions.assertEquals("Maria", resultado.getNome());
     }
 
     @Test

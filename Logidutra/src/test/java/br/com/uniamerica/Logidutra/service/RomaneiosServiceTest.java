@@ -101,7 +101,7 @@ public class RomaneiosServiceTest {
         Assertions.assertEquals(1L, resultado.get(0).getId());
         Assertions.assertEquals(2L, resultado.get(1).getId());
 
-        verify(romaneiosRepository).findById(1L);
+        verify(romaneiosRepository).findAll();
     }
 
     @Test
@@ -165,7 +165,7 @@ public class RomaneiosServiceTest {
 
         Romaneios resultado = romaneiosService.atualizar(1L, request);
 
-        Assertions.assertNull(resultado);
+        Assertions.assertNotNull(resultado);
         Assertions.assertEquals(1L, resultado.getId());
 
         verify(romaneiosRepository).save(any(Romaneios.class));

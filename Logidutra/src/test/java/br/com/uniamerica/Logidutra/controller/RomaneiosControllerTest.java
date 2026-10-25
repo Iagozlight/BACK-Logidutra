@@ -2,10 +2,18 @@ package br.com.uniamerica.Logidutra.controller;
 
 import br.com.uniamerica.Logidutra.controller.dto.RomaneiosRequest;
 import br.com.uniamerica.Logidutra.controller.dto.RomaneiosResponse;
+import br.com.uniamerica.Logidutra.entity.ClienteEntity;
 import br.com.uniamerica.Logidutra.entity.Romaneios;
+import br.com.uniamerica.Logidutra.entity.Usuario;
+import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.Logidutra.service.RomaneiosService;
+import br.com.uniamerica.Logidutra.service.UsuarioService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -19,20 +27,22 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class RomaneiosControllerTest {
 
-    @Autowired
-    RomaneiosController romaneiosController;
+    @Mock
+    private RomaneiosService romaneiosService;
 
-    @MockitoBean
-    RomaneiosService romaneiosService;
+    @Mock
+    private UsuarioService usuarioService;
+
+    @InjectMocks
+    private RomaneiosController romaneiosController;
 
     @Test
     void cenario01_salvarRomaneioRetornaCreated(){
 
-        Romaneios romaneio = new Romaneios();
-        romaneio.setId(1L);
+        Romaneios romaneio = criarRomaneio();
 
         when(romaneiosService.salvar(any(RomaneiosRequest.class)))
                 .thenReturn(romaneio);
@@ -55,8 +65,7 @@ public class RomaneiosControllerTest {
 
     @Test
     void cenario02_listarRomaneiosRetornaOk(){
-        Romaneios romaneio = new Romaneios();
-        romaneio.setId(1L);
+        Romaneios romaneio = criarRomaneio();
 
         when(romaneiosService.listar())
                 .thenReturn(List.of(romaneio));
@@ -74,8 +83,7 @@ public class RomaneiosControllerTest {
     @Test
     void cenario03_buscarRomaneioPorIdRetornaOk(){
 
-        Romaneios romaneio = new Romaneios();
-        romaneio.setId(1L);
+        Romaneios romaneio = criarRomaneio();
 
         when(romaneiosService.buscarPorId(1L))
                 .thenReturn(romaneio);
@@ -91,8 +99,7 @@ public class RomaneiosControllerTest {
     @Test
     void cenario04_RetornoatualizarRomaneios(){
 
-        Romaneios romaneio = new Romaneios();
-        romaneio.setId(1L);
+        Romaneios romaneio = criarRomaneio();
 
         when(romaneiosService.atualizar(
                 eq(1L), any(RomaneiosRequest.class)))
@@ -118,8 +125,7 @@ public class RomaneiosControllerTest {
     @Test
     void cenario05_RetornoAtualizarParcial(){
 
-        Romaneios romaneio = new Romaneios();
-        romaneio.setId(1L);
+        Romaneios romaneio = criarRomaneio();
 
         when(romaneiosService.atualizarParcial(
                 eq(1L), any(RomaneiosRequest.class)))
@@ -127,12 +133,7 @@ public class RomaneiosControllerTest {
 
         RomaneiosRequest request = new RomaneiosRequest(
                 null,
-                LocalDate.now(),
-                null,
-                null,
-                null,
-                null
-        );
+                LocalDate.now(),null, null, null, null);
 
         ResponseEntity<RomaneiosResponse> resposta =
                 romaneiosController.atualizarParcial(1L, request);
@@ -155,5 +156,24 @@ public class RomaneiosControllerTest {
         );
 
         verify(romaneiosService).deletarPorID(1L);
+    }
+
+    private Romaneios criarRomaneio() {
+        Romaneios romaneio = new Romaneios();
+        romaneio.setId(1L);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1L);
+        romaneio.setUsuario(usuario);
+
+        VeiculoEntity veiculo = new VeiculoEntity();
+        veiculo.setId(1L);
+        romaneio.setVeiculo(veiculo);
+
+        ClienteEntity cliente = new ClienteEntity();
+        cliente.setId(1L);
+        romaneio.setClientes(List.of(cliente));
+        romaneio.setProdutoList(List.of());
+        return romaneio;
     }
 }

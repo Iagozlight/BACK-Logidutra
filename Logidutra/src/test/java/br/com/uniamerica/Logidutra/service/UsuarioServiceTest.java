@@ -18,8 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 public class UsuarioServiceTest {
@@ -82,38 +81,25 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    void cenario02() {
+    void salvar_deveLancarConflictQuandoNomeJaExiste() {
+        when(usuarioRepository.existsByNomeIgnoreCase("Joao")).thenReturn(true);
 
-        Usuario admin = new Usuario();
-        admin.setId(1L);
+        assertStatus(HttpStatus.CONFLICT, () -> usuarioService.salvar(
+                new UsuarioRequest("Joao", "123", 20, Role.USER), admin));
 
-        when(usuarioRepository.existsByNomeIgnoreCase(any()))
-                .thenReturn(false);
-
-        when(usuarioRepository.save(any()))
-                .thenReturn(new Usuario());
-
-        usuarioService.salvar(
-                new UsuarioRequest("Joao", "123", 20, Role.USER),
-                admin
-        );
-
-        verify(roleService)
-                .validarRole(1L, Role.ADMIN);
+        verify(usuarioRepository, never()).save(any());
     }
 
     @Test
-    void cenario03() {
+    void salvar_deveLancarExcecaoQuandoUsuarioLogadoNaoEAdmin() {
+        doThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "sem permissão"))
+                .when(roleService).validarRole(2L, Role.ADMIN);
 
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
+        assertStatus(HttpStatus.FORBIDDEN, () -> usuarioService.salvar(
+                new UsuarioRequest("Maria", "123", 20, Role.USER), usuario));
 
-        when(usuarioRepository.findById(1L))
-                .thenReturn(Optional.of(usuario));
-
-        Usuario resultado = usuarioService.buscarPorId(1L);
-
-        Assertions.assertEquals(1L, resultado.getId());
+        verify(usuarioRepository, never()).existsByNomeIgnoreCase(any());
+        verify(usuarioRepository, never()).save(any());
     }
 
     @Test

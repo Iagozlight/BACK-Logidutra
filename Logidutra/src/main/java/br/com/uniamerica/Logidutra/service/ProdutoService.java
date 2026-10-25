@@ -23,6 +23,8 @@ public class ProdutoService {
     public Produto salvar (ProdutoRequest produtoRequest){
         log.info("Iniciando o cadastro de um novo produto: {}", produtoRequest.nome());
 
+        if(produtoRequest.nome() == null || produtoRequest.preco() == null) throw new IllegalArgumentException("Produto Request Invalida!");
+
         Produto produto1 = new Produto();
         produto1.setId(produtoRequest.id());
         produto1.setNome(produtoRequest.nome());

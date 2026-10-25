@@ -31,17 +31,27 @@ public class UsuarioServiceTest {
     @MockitoBean
     RoleService roleService;
 
+    private Usuario usuario;
+    private Usuario admin;
+
     @BeforeEach
     void setup() {
-
-        Usuario usuario = new Usuario();
-        usuario.setId(1L);
+        usuario = new Usuario();
+        usuario.setId(2L);
         usuario.setNome("Joao");
         usuario.setSenha("123");
+        usuario.setIdade(20);
         usuario.setRole(Role.USER);
+        usuario.setStatus(StatusOperacional.DISPONIVEL);
 
-        when(usuarioRepository.findByNomeIgnoreCase("Joao"))
-                .thenReturn(usuario);
+        admin = new Usuario();
+        admin.setId(1L);
+        admin.setNome("Admin");
+        admin.setRole(Role.ADMIN);
+
+        // o save devolve o próprio objeto recebido
+        when(usuarioRepository.save(any(Usuario.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test

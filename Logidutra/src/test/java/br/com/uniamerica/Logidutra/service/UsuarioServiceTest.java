@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -49,9 +50,14 @@ public class UsuarioServiceTest {
         admin.setNome("Admin");
         admin.setRole(Role.ADMIN);
 
-        // o save devolve o próprio objeto recebido
         when(usuarioRepository.save(any(Usuario.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+    }
+
+    private ResponseStatusException assertStatus(HttpStatus esperado, org.junit.jupiter.api.function.Executable acao) {
+        ResponseStatusException exception = Assertions.assertThrows(ResponseStatusException.class, acao);
+        Assertions.assertEquals(esperado, exception.getStatusCode());
+        return exception;
     }
 
     @Test

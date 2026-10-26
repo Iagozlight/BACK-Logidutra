@@ -1,13 +1,10 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
 import br.com.uniamerica.Logidutra.controller.dto.RomaneiosRequest;
-import br.com.uniamerica.Logidutra.controller.dto.RomaneiosResponse;
 import br.com.uniamerica.Logidutra.entity.*;
 import br.com.uniamerica.Logidutra.repository.ClienteRepository;
 import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import br.com.uniamerica.Logidutra.repository.RomaneiosRepository;
-import jakarta.persistence.Entity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor

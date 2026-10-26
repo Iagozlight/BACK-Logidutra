@@ -1,6 +1,5 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.UsuarioController;
 import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.enums.Role;

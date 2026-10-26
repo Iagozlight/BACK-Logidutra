@@ -1,9 +1,7 @@
 package br.com.uniamerica.Logidutra.service;
 
 import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

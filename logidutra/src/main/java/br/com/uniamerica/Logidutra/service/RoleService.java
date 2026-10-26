@@ -4,7 +4,6 @@ import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.enums.Role;
 import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;

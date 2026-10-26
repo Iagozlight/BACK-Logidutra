@@ -1,22 +1,23 @@
-package br.com.uniamerica.Logidutra.controller;
+package br.com.uniamerica.logidutra.controller;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.VeiculoResponse;
-import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
-import br.com.uniamerica.Logidutra.service.VeiculoService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.server.ResponseStatusException;
+
+import br.com.uniamerica.logidutra.controller.dto.VeiculoRequest;
+import br.com.uniamerica.logidutra.controller.dto.VeiculoResponse;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.entity.VeiculoEntity;
+import br.com.uniamerica.logidutra.service.UsuarioService;
+import br.com.uniamerica.logidutra.service.VeiculoService;
 
 @RestController
 @RequestMapping("/api/logidutra/veiculo")

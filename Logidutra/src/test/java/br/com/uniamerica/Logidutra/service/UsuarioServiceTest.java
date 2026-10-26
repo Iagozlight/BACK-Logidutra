@@ -1,10 +1,5 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
-import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.server.ResponseStatusException;
+
+import br.com.uniamerica.logidutra.controller.dto.UsuarioRequest;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.repository.UsuarioRepository;
+import br.com.uniamerica.logidutra.service.RoleService;
+import br.com.uniamerica.logidutra.service.UsuarioService;
 
 import java.util.List;
 import java.util.Optional;

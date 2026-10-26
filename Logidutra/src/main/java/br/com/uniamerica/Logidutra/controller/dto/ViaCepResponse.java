@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.controller.dto;
+package br.com.uniamerica.logidutra.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra;
+package br.com.uniamerica.logidutra;
 
 import org.aspectj.weaver.ast.Test;
 import org.springframework.boot.SpringApplication;

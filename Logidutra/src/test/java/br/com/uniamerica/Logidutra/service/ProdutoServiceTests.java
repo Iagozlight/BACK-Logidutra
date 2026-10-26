@@ -13,9 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.server.ResponseStatusException;
 
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
-import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
+import br.com.uniamerica.logidutra.controller.dto.ProdutoRequest;
+import br.com.uniamerica.logidutra.entity.Produto;
+import br.com.uniamerica.logidutra.repository.ProdutoRepository;
+import br.com.uniamerica.logidutra.service.ProdutoService;
 
 @SpringBootTest 
 public class ProdutoServiceTests {

@@ -1,9 +1,9 @@
-package br.com.uniamerica.Logidutra.controller.dto;
-
-import br.com.uniamerica.Logidutra.entity.Romaneios;
+package br.com.uniamerica.logidutra.controller.dto;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import br.com.uniamerica.logidutra.entity.Romaneios;
 
 public record RomaneiosResponse (
         Long id,

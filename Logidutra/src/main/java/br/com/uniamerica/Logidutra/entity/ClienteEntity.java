@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.entity;
+package br.com.uniamerica.logidutra.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,7 +1,8 @@
-package br.com.uniamerica.Logidutra.repository;
+package br.com.uniamerica.logidutra.repository;
 
-import br.com.uniamerica.Logidutra.entity.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import br.com.uniamerica.logidutra.entity.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 

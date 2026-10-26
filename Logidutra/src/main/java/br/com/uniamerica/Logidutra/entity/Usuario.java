@@ -1,11 +1,12 @@
-package br.com.uniamerica.Logidutra.entity;
+package br.com.uniamerica.logidutra.entity;
 
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.enums.StatusOperacional;
 
 @Entity
 @AllArgsConstructor

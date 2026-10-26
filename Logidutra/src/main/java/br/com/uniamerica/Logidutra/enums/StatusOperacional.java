@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.enums;
+package br.com.uniamerica.logidutra.enums;
 
 public enum StatusOperacional {
     DISPONIVEL,

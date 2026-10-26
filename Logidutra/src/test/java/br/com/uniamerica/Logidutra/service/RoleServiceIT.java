@@ -1,13 +1,16 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.repository.UsuarioRepository;
+import br.com.uniamerica.logidutra.service.RoleService;
+
 import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;

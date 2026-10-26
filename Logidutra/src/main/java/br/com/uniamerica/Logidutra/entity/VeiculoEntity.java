@@ -1,6 +1,5 @@
-package br.com.uniamerica.Logidutra.entity;
+package br.com.uniamerica.logidutra.entity;
 
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
+
+import br.com.uniamerica.logidutra.enums.StatusOperacional;
 
 @Entity
 

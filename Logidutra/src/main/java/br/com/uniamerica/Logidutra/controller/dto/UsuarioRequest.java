@@ -1,7 +1,7 @@
-package br.com.uniamerica.Logidutra.controller.dto;
+package br.com.uniamerica.logidutra.controller.dto;
 
 
-import br.com.uniamerica.Logidutra.enums.Role;
+import br.com.uniamerica.logidutra.enums.Role;
 
 public record UsuarioRequest(
         String nome,

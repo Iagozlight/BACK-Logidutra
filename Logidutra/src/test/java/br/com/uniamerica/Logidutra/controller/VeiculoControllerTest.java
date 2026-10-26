@@ -1,11 +1,5 @@
 package br.com.uniamerica.Logidutra.controller;
 
-import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.VeiculoResponse;
-import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
-import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
-import br.com.uniamerica.Logidutra.service.VeiculoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +12,14 @@ import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import br.com.uniamerica.logidutra.controller.VeiculoController;
+import br.com.uniamerica.logidutra.controller.dto.VeiculoRequest;
+import br.com.uniamerica.logidutra.controller.dto.VeiculoResponse;
+import br.com.uniamerica.logidutra.entity.VeiculoEntity;
+import br.com.uniamerica.logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.repository.VeiculoRepository;
+import br.com.uniamerica.logidutra.service.VeiculoService;
 
 import java.util.List;
 import java.util.NoSuchElementException;

@@ -1,17 +1,20 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.dto.VeiculoRequest;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
-import br.com.uniamerica.Logidutra.repository.VeiculoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.server.ResponseStatusException;
+
+import br.com.uniamerica.logidutra.controller.dto.VeiculoRequest;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.entity.VeiculoEntity;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.repository.VeiculoRepository;
+import br.com.uniamerica.logidutra.service.RoleService;
+import br.com.uniamerica.logidutra.service.VeiculoService;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;

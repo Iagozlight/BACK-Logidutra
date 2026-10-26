@@ -1,10 +1,5 @@
 package br.com.uniamerica.Logidutra.controller;
 
-import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
-import br.com.uniamerica.Logidutra.entity.ClienteEntity;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.service.ClienteService;
-import br.com.uniamerica.Logidutra.service.UsuarioService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import br.com.uniamerica.logidutra.controller.ClienteController;
+import br.com.uniamerica.logidutra.controller.dto.ClienteRequest;
+import br.com.uniamerica.logidutra.entity.ClienteEntity;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.service.ClienteService;
+import br.com.uniamerica.logidutra.service.UsuarioService;
 
 import java.util.List;
 import java.util.NoSuchElementException;

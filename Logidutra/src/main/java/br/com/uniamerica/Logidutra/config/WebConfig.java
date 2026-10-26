@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.config;
+package br.com.uniamerica.logidutra.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

@@ -1,7 +1,8 @@
-package br.com.uniamerica.Logidutra.repository;
+package br.com.uniamerica.logidutra.repository;
 
-import br.com.uniamerica.Logidutra.entity.Romaneios;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import br.com.uniamerica.logidutra.entity.Romaneios;
 
 public interface RomaneiosRepository extends JpaRepository<Romaneios, Long> {
 }

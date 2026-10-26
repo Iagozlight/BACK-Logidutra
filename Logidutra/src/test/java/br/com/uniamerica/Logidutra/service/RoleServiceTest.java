@@ -1,13 +1,15 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.repository.UsuarioRepository;
+import br.com.uniamerica.logidutra.service.RoleService;
 
 import java.util.Optional;
 

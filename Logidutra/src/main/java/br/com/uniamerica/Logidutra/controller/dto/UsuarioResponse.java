@@ -1,9 +1,8 @@
-package br.com.uniamerica.Logidutra.controller.dto;
+package br.com.uniamerica.logidutra.controller.dto;
 
-import br.com.uniamerica.Logidutra.entity.Usuario;
-
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.enums.StatusOperacional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

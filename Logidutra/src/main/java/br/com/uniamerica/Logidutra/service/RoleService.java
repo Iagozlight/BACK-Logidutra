@@ -1,11 +1,15 @@
-package br.com.uniamerica.Logidutra.service;
+package br.com.uniamerica.logidutra.service;
 
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.repository.UsuarioRepository;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +27,7 @@ public class RoleService {
         List<Role> listaDeRolesPermitidas = Arrays.asList(rolesPermitidas);
 
         if (!listaDeRolesPermitidas.contains(usuario.getRole())) {
-            throw new RuntimeException("Acesso negado: Usuário não possui a permissão necessária.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado: Usuário não possui a permissão necessária.");
         }
     }
 }

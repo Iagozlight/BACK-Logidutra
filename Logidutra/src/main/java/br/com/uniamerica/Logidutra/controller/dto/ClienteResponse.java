@@ -1,6 +1,6 @@
-package br.com.uniamerica.Logidutra.controller.dto;
+package br.com.uniamerica.logidutra.controller.dto;
 
-import br.com.uniamerica.Logidutra.entity.ClienteEntity;
+import br.com.uniamerica.logidutra.entity.ClienteEntity;
 import jakarta.validation.constraints.NotBlank;
 
 public record ClienteResponse(

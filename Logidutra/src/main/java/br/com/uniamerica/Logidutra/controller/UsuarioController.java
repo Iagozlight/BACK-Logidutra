@@ -1,15 +1,16 @@
-package br.com.uniamerica.Logidutra.controller;
+package br.com.uniamerica.logidutra.controller;
 
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import br.com.uniamerica.logidutra.controller.dto.UsuarioRequest;
+import br.com.uniamerica.logidutra.controller.dto.UsuarioResponse;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.service.UsuarioService;
 
 import java.util.List;
 

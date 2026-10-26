@@ -14,10 +14,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoResponse;
-import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
+import br.com.uniamerica.logidutra.controller.ProdutoController;
+import br.com.uniamerica.logidutra.controller.dto.ProdutoRequest;
+import br.com.uniamerica.logidutra.controller.dto.ProdutoResponse;
+import br.com.uniamerica.logidutra.entity.Produto;
+import br.com.uniamerica.logidutra.repository.ProdutoRepository;
 
 @SpringBootTest 
 public class ProdutoControllerTest {

@@ -1,15 +1,16 @@
-package br.com.uniamerica.Logidutra.service;
+package br.com.uniamerica.logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
-import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import br.com.uniamerica.logidutra.controller.dto.ProdutoRequest;
+import br.com.uniamerica.logidutra.controller.dto.UsuarioRequest;
+import br.com.uniamerica.logidutra.entity.Produto;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.repository.ProdutoRepository;
 
 import java.util.List;
 

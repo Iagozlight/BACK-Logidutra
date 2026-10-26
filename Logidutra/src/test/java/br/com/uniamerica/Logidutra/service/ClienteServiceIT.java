@@ -1,13 +1,5 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ViaCepResponse;
-import br.com.uniamerica.Logidutra.data.feign.ViaCepClient;
-import br.com.uniamerica.Logidutra.entity.ClienteEntity;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.repository.ClienteRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +7,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+
+import br.com.uniamerica.logidutra.controller.dto.ClienteRequest;
+import br.com.uniamerica.logidutra.controller.dto.ViaCepResponse;
+import br.com.uniamerica.logidutra.data.feign.ViaCepClient;
+import br.com.uniamerica.logidutra.entity.ClienteEntity;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.repository.ClienteRepository;
+import br.com.uniamerica.logidutra.service.ClienteService;
+import br.com.uniamerica.logidutra.service.RoleService;
 
 import java.util.List;
 import java.util.UUID;

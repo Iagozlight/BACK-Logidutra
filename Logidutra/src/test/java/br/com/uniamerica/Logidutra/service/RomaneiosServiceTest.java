@@ -1,14 +1,5 @@
 package br.com.uniamerica.Logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.dto.RomaneiosRequest;
-import br.com.uniamerica.Logidutra.entity.ClienteEntity;
-import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.entity.Romaneios;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.entity.VeiculoEntity;
-import br.com.uniamerica.Logidutra.repository.ClienteRepository;
-import br.com.uniamerica.Logidutra.repository.ProdutoRepository;
-import br.com.uniamerica.Logidutra.repository.RomaneiosRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.util.Assert;
+
+import br.com.uniamerica.logidutra.controller.dto.RomaneiosRequest;
+import br.com.uniamerica.logidutra.entity.ClienteEntity;
+import br.com.uniamerica.logidutra.entity.Produto;
+import br.com.uniamerica.logidutra.entity.Romaneios;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.entity.VeiculoEntity;
+import br.com.uniamerica.logidutra.repository.ClienteRepository;
+import br.com.uniamerica.logidutra.repository.ProdutoRepository;
+import br.com.uniamerica.logidutra.repository.RomaneiosRepository;
+import br.com.uniamerica.logidutra.service.RomaneiosService;
+import br.com.uniamerica.logidutra.service.UsuarioService;
+import br.com.uniamerica.logidutra.service.VeiculoService;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,14 +1,15 @@
-package br.com.uniamerica.Logidutra.controller;
+package br.com.uniamerica.logidutra.controller;
 
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoResponse;
-import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import br.com.uniamerica.logidutra.controller.dto.ProdutoRequest;
+import br.com.uniamerica.logidutra.controller.dto.ProdutoResponse;
+import br.com.uniamerica.logidutra.entity.Produto;
+import br.com.uniamerica.logidutra.service.ProdutoService;
 
 import java.util.List;
 

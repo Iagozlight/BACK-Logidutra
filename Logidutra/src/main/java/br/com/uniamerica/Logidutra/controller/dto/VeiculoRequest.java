@@ -1,4 +1,4 @@
-package br.com.uniamerica.Logidutra.controller.dto;
+package br.com.uniamerica.logidutra.controller.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

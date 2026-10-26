@@ -24,10 +24,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class VeiculoService {
     private VeiculoRepository veiculoRepository;
     private final RoleService roleService;
+    private static final String PLACA_INVALIDA = "Placa fora do formato esperado";
 
     public boolean validarPlaca(String placa) {
-        final String regexPlaca = "^[A-Z]{3}[0-9]{1}[A-Z]{1}[0-9]{2}$";
-
+        final String regexPlaca = "^[A-Z]{3}[0-9][A-Z][0-9]{2}$";
+        
         Pattern pattern = Pattern.compile(regexPlaca);
         Matcher matcher = pattern.matcher(placa);
         return matcher.find();
@@ -40,7 +41,7 @@ public class VeiculoService {
 
         if (!validarPlaca(veiculoRequest.placa())) {
             log.warn("Placa inválida: {}", veiculoRequest.placa());
-            throw new IllegalArgumentException("Placa fora do formato esperado");
+            throw new IllegalArgumentException(PLACA_INVALIDA);
         }
 
         VeiculoEntity veiculo = new VeiculoEntity();
@@ -69,7 +70,7 @@ public class VeiculoService {
         veiculo.setMarca(veiculoRequest.marca());
         veiculo.setModelo(veiculoRequest.modelo());
 
-        if (!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException("Placa fora do formato esperado");
+        if (!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException(PLACA_INVALIDA);
         veiculo.setPlaca(veiculoRequest.placa());
 
         return veiculoRepository.save(veiculo);
@@ -84,7 +85,7 @@ public class VeiculoService {
         if (veiculoRequest.modelo() != null) veiculo.setModelo(veiculoRequest.modelo());
         if (veiculoRequest.placa() != null) {
             if (!validarPlaca(veiculoRequest.placa()))
-                throw new IllegalArgumentException("Placa fora do formato esperado");
+                throw new IllegalArgumentException(PLACA_INVALIDA);
             veiculo.setPlaca(veiculoRequest.placa());
         }
 

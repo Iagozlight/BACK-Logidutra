@@ -4,7 +4,9 @@ import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.repository.UsuarioRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +24,7 @@ public class RoleService {
         List<Role> listaDeRolesPermitidas = Arrays.asList(rolesPermitidas);
 
         if (!listaDeRolesPermitidas.contains(usuario.getRole())) {
-            throw new RuntimeException("Acesso negado: Usuário não possui a permissão necessária.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acesso negado: Usuário não possui a permissão necessária.");
         }
     }
 }

@@ -26,7 +26,7 @@ public class RomaneiosController {
     public ResponseEntity<RomaneiosResponse> salvar(@Valid @RequestBody RomaneiosRequest romaneiosRequest){
         try{
             Romaneios romaneios = this.romaneiosService.salvar(romaneiosRequest);
-            return new ResponseEntity<RomaneiosResponse>(RomaneiosResponse.de(romaneios), HttpStatus.CREATED);
+            return new ResponseEntity<>(RomaneiosResponse.de(romaneios), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -62,7 +62,7 @@ public class RomaneiosController {
             @RequestParam(required = true) long id, @Valid @RequestBody RomaneiosRequest romaneiosRequest) {
         try {
             Romaneios romaneios = romaneiosService.atualizar(id, romaneiosRequest);
-            return new ResponseEntity<RomaneiosResponse>(RomaneiosResponse.de(romaneios), HttpStatus.OK);
+            return new ResponseEntity<>(RomaneiosResponse.de(romaneios), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -74,7 +74,7 @@ public class RomaneiosController {
             @RequestParam(required = true) long id, @Valid @RequestBody RomaneiosRequest romaneiosRequest){
         try {
             Romaneios romaneios = this.romaneiosService.atualizarParcial(id, romaneiosRequest);
-            return new ResponseEntity<RomaneiosResponse>(RomaneiosResponse.de(romaneios), HttpStatus.OK);
+            return new ResponseEntity<>(RomaneiosResponse.de(romaneios), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -176,4 +176,90 @@ public class RomaneiosControllerTest {
         romaneio.setProdutoList(List.of());
         return romaneio;
     }
+    @Test
+    void cenario07_salvarRomaneioRetornaBadRequest() {
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                1L,
+                1L,
+                List.of(1L),
+                null
+        );
+        when(romaneiosService.salvar(request)).thenThrow(new RuntimeException());
+
+        ResponseEntity<RomaneiosResponse> resposta = romaneiosController.salvar(request);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
+        verify(romaneiosService).salvar(request);
+    }
+
+    @Test
+    void cenario08_listarRomaneiosVazio() {
+        when(romaneiosService.listar()).thenReturn(List.of());
+
+        ResponseEntity<List<RomaneiosResponse>> resposta = romaneiosController.listar();
+
+        Assertions.assertEquals(HttpStatus.OK, resposta.getStatusCode());
+        Assertions.assertNotNull(resposta.getBody());
+        Assertions.assertTrue(resposta.getBody().isEmpty());
+    }
+
+    @Test
+    void cenario09_listarRomaneiosRetornaBadRequest() {
+        when(romaneiosService.listar()).thenThrow(new RuntimeException());
+
+        ResponseEntity<List<RomaneiosResponse>> resposta = romaneiosController.listar();
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
+    }
+
+    @Test
+    void cenario10_buscarRomaneioRetornaBadRequest() {
+        when(romaneiosService.buscarPorId(99L)).thenThrow(new RuntimeException());
+
+        ResponseEntity<RomaneiosResponse> resposta = romaneiosController.buscarPorId(99L);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
+        verify(romaneiosService).buscarPorId(99L);
+    }
+
+    @Test
+    void cenario11_atualizarRomaneioRetornaBadRequest() {
+        RomaneiosRequest request = new RomaneiosRequest(
+                null,
+                LocalDate.now(),
+                1L,
+                1L,
+                List.of(1L),
+                null
+        );
+        when(romaneiosService.atualizar(1L, request)).thenThrow(new RuntimeException());
+
+        ResponseEntity<RomaneiosResponse> resposta = romaneiosController.atualizar(1L, request);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
+        verify(romaneiosService).atualizar(1L, request);
+    }
+
+    @Test
+    void cenario12_atualizarParcialRetornaBadRequest() {
+        RomaneiosRequest request = new RomaneiosRequest(null, null, null, null, null, null);
+        when(romaneiosService.atualizarParcial(1L, request)).thenThrow(new RuntimeException());
+
+        ResponseEntity<RomaneiosResponse> resposta = romaneiosController.atualizarParcial(1L, request);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
+        verify(romaneiosService).atualizarParcial(1L, request);
+    }
+
+    @Test
+    void cenario13_deletarRomaneioRetornaBadRequest() {
+        doThrow(new RuntimeException()).when(romaneiosService).deletarPorID(99L);
+
+        ResponseEntity<?> resposta = romaneiosController.deletar(99L);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, resposta.getStatusCode());
+        verify(romaneiosService).deletarPorID(99L);
+    }
 }

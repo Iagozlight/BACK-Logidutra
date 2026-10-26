@@ -74,7 +74,7 @@ class ClienteServiceTest {
 
     @Test
     void listaClientes() {
-        when(clienteRepository.findAll()).thenReturn(List.of(cliente("Gabriel")));
+        when(clienteRepository.findAll()).thenReturn(List.of(cliente()));
 
         List<ClienteEntity> clientes = clienteService.listar();
 
@@ -84,7 +84,7 @@ class ClienteServiceTest {
 
     @Test
     void buscaClientePorId() {
-        ClienteEntity esperado = cliente("Gabriel");
+        ClienteEntity esperado = cliente();
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(esperado));
 
         assertSame(esperado, clienteService.buscarPorId(1L));
@@ -139,7 +139,7 @@ class ClienteServiceTest {
 
     @Test
     void atualizaDadosEEnderecoDoCliente() {
-        ClienteEntity existente = cliente("Gabriel");
+        ClienteEntity existente = cliente();
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
         when(viaCepClient.buscarPorCep("85876-113")).thenReturn(endereco("85876-113", "Rua Nova"));
         when(clienteRepository.save(any(ClienteEntity.class))).thenAnswer(invocacao -> invocacao.getArgument(0));
@@ -154,7 +154,7 @@ class ClienteServiceTest {
 
     @Test
     void atualizaParcialSemCep() {
-        ClienteEntity existente = cliente("Gabriel");
+        ClienteEntity existente = cliente();
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
         when(clienteRepository.save(existente)).thenReturn(existente);
         ClienteRequest alteracao = new ClienteRequest("Maria", null, null, "85850-000");
@@ -169,7 +169,7 @@ class ClienteServiceTest {
 
     @Test
     void atualizaCepNaAlteracaoParcial() {
-        ClienteEntity existente = cliente("Gabriel");
+        ClienteEntity existente = cliente();
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
         when(viaCepClient.buscarPorCep("85876-113")).thenReturn(endereco("85876-113", "Rua Nova"));
         when(clienteRepository.save(existente)).thenReturn(existente);
@@ -183,7 +183,7 @@ class ClienteServiceTest {
 
     @Test
     void alteracaoParcialMantemCepIgualSemConsultarViaCep() {
-        ClienteEntity existente = cliente("Gabriel");
+        ClienteEntity existente = cliente();
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
         when(clienteRepository.save(existente)).thenReturn(existente);
 
@@ -196,7 +196,7 @@ class ClienteServiceTest {
 
     @Test
     void deletaClienteExistente() {
-        ClienteEntity existente = cliente("Gabriel");
+        ClienteEntity existente = cliente();
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(existente));
 
         clienteService.deletar(1L, usuario);
@@ -213,10 +213,10 @@ class ClienteServiceTest {
         return new ViaCepResponse(cep, logradouro, "Centro", "Foz do Iguaçu", false);
     }
 
-    private ClienteEntity cliente(String nome) {
+    private ClienteEntity cliente() {
         ClienteEntity cliente = new ClienteEntity();
         cliente.setId(1L);
-        cliente.setNome(nome);
+        cliente.setNome("Gabriel");
         cliente.setCpf("123.456.789-00");
         cliente.setTelefone("45999999999");
         cliente.setCep("85850-000");

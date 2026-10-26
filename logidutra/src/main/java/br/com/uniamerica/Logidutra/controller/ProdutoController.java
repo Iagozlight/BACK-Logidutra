@@ -51,9 +51,9 @@ public class ProdutoController {
     public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable long id){
         try {
             Produto produto = this.produtoService.buscarPorId(id);
-            return new ResponseEntity(ProdutoResponse.de(produto), HttpStatus.OK);
+            return new ResponseEntity<>(ProdutoResponse.de(produto), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

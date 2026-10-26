@@ -1,10 +1,7 @@
 package br.com.uniamerica.Logidutra.controller;
 
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoResponse;
 import br.com.uniamerica.Logidutra.controller.dto.RomaneiosRequest;
 import br.com.uniamerica.Logidutra.controller.dto.RomaneiosResponse;
-import br.com.uniamerica.Logidutra.entity.Produto;
 import br.com.uniamerica.Logidutra.entity.Romaneios;
 import br.com.uniamerica.Logidutra.service.RomaneiosService;
 import jakarta.validation.Valid;
@@ -54,9 +51,9 @@ public class RomaneiosController {
     public ResponseEntity<RomaneiosResponse> buscarPorId(@PathVariable long id){
         try {
             Romaneios romaneios = this.romaneiosService.buscarPorId(id);
-            return new ResponseEntity(RomaneiosResponse.de(romaneios), HttpStatus.OK);
+            return new ResponseEntity<>(RomaneiosResponse.de(romaneios), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -67,7 +64,7 @@ public class RomaneiosController {
             Romaneios romaneios = romaneiosService.atualizar(id, romaneiosRequest);
             return new ResponseEntity<RomaneiosResponse>(RomaneiosResponse.de(romaneios), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }

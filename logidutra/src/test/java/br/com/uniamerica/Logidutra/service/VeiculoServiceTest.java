@@ -35,14 +35,14 @@ public class VeiculoServiceTest {
         String placa = "a2c1d04";
 
         boolean resultado = this.veiculoService.validarPlaca(placa);
-        assertEquals(false,resultado);
+        assertFalse(resultado);
     }
     @Test
     void aceitaPlacaValida(){
         String placa = "ABC1C34";
 
         boolean resultado = this.veiculoService.validarPlaca(placa);
-        assertEquals(true,resultado);
+        assertTrue(resultado);
     }
 
     @Test

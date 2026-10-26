@@ -2,14 +2,11 @@ package br.com.uniamerica.Logidutra.controller;
 
 import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
 import br.com.uniamerica.Logidutra.controller.dto.ClienteResponse;
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
-import br.com.uniamerica.Logidutra.controller.dto.VeiculoResponse;
 import br.com.uniamerica.Logidutra.entity.ClienteEntity;
 import br.com.uniamerica.Logidutra.entity.Usuario;
 import br.com.uniamerica.Logidutra.service.ClienteService;
 import br.com.uniamerica.Logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

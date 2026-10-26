@@ -1,9 +1,9 @@
-package br.com.uniamerica.Logidutra.controller;
+package br.com.uniamerica.logidutra.controller;
 
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ProdutoResponse;
-import br.com.uniamerica.Logidutra.entity.Produto;
-import br.com.uniamerica.Logidutra.service.ProdutoService;
+import br.com.uniamerica.logidutra.controller.dto.ProdutoRequest;
+import br.com.uniamerica.logidutra.controller.dto.ProdutoResponse;
+import br.com.uniamerica.logidutra.entity.Produto;
+import br.com.uniamerica.logidutra.service.ProdutoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +25,7 @@ public class ProdutoController {
     public ResponseEntity<ProdutoResponse> salvar(@Valid @RequestBody ProdutoRequest produtoRequest){
         try{
             Produto produto = this.produtoService.salvar(produtoRequest);
-            return new ResponseEntity<ProdutoResponse>(ProdutoResponse.de(produto), HttpStatus.CREATED);
+            return new ResponseEntity<>(ProdutoResponse.de(produto), HttpStatus.CREATED);
         }catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -59,29 +59,29 @@ public class ProdutoController {
 
     @PutMapping("/atualizar")
     public ResponseEntity<ProdutoResponse> atualizar(
-            @RequestParam(required = true) long id, @RequestBody ProdutoRequest produtoRequest) {
+            @RequestParam() long id, @RequestBody ProdutoRequest produtoRequest) {
         try {
             Produto produto = produtoService.atualizar(id, produtoRequest);
-            return new ResponseEntity<ProdutoResponse>(ProdutoResponse.de(produto), HttpStatus.OK);
+            return new ResponseEntity<>(ProdutoResponse.de(produto), HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
     }
 
     @PatchMapping("/atualizar")
     public ResponseEntity<ProdutoResponse> atualizarParcial(
-            @RequestParam(required = true) long id, @RequestBody ProdutoRequest produtoRequest){
+            @RequestParam() long id, @RequestBody ProdutoRequest produtoRequest){
         try {
             Produto produto = this.produtoService.atualizarParcial(id, produtoRequest);
-            return new ResponseEntity<ProdutoResponse>(ProdutoResponse.de(produto), HttpStatus.OK);
+            return new ResponseEntity<>(ProdutoResponse.de(produto), HttpStatus.OK);
         } catch (Exception e){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity deletar(@PathVariable long id){
+    public ResponseEntity<Void> deletar(@PathVariable long id){
         try {
             this.produtoService.deletarPorID(id);
             return ResponseEntity.status(HttpStatus.OK).build();

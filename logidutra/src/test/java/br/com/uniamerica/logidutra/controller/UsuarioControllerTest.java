@@ -1,11 +1,11 @@
-package br.com.uniamerica.Logidutra.controller;
+package br.com.uniamerica.logidutra.controller;
 
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioRequest;
-import br.com.uniamerica.Logidutra.controller.dto.UsuarioResponse;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.enums.StatusOperacional;
-import br.com.uniamerica.Logidutra.service.UsuarioService;
+import br.com.uniamerica.logidutra.controller.dto.UsuarioRequest;
+import br.com.uniamerica.logidutra.controller.dto.UsuarioResponse;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.service.UsuarioService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

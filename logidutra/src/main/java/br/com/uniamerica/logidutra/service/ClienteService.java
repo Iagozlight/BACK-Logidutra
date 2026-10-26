@@ -1,12 +1,12 @@
-package br.com.uniamerica.Logidutra.service;
+package br.com.uniamerica.logidutra.service;
 
-import br.com.uniamerica.Logidutra.controller.dto.ClienteRequest;
-import br.com.uniamerica.Logidutra.controller.dto.ViaCepResponse;
-import br.com.uniamerica.Logidutra.data.feign.ViaCepClient;
-import br.com.uniamerica.Logidutra.entity.ClienteEntity;
-import br.com.uniamerica.Logidutra.entity.Usuario;
-import br.com.uniamerica.Logidutra.enums.Role;
-import br.com.uniamerica.Logidutra.repository.ClienteRepository;
+import br.com.uniamerica.logidutra.controller.dto.ClienteRequest;
+import br.com.uniamerica.logidutra.controller.dto.ViaCepResponse;
+import br.com.uniamerica.logidutra.data.feign.ViaCepClient;
+import br.com.uniamerica.logidutra.entity.ClienteEntity;
+import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.repository.ClienteRepository;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;

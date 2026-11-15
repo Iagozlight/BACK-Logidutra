@@ -1,4 +1,7 @@
 package br.com.uniamerica.logidutra.controller.auth;
 
-public class LoginRequest {
+public record LoginRequest(
+        String login,
+        String senha
+) {
 }

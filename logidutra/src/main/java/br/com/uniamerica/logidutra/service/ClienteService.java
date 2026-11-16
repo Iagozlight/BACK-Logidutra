@@ -7,6 +7,7 @@ import br.com.uniamerica.logidutra.entity.ClienteEntity;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.exception.ApiExternaIndisponivelException;
+import br.com.uniamerica.logidutra.exception.CepInvalidoException;
 import br.com.uniamerica.logidutra.exception.CepNaoEncontradoException;
 import br.com.uniamerica.logidutra.exception.RegistroNaoEncontradoException;
 import br.com.uniamerica.logidutra.repository.ClienteRepository;
@@ -48,7 +49,7 @@ public class ClienteService {
                 log.error("Erro de comunicação com o ViaCep: {}", e.getMessage());
                 throw new ApiExternaIndisponivelException("Erro de comunicação com o ViaCep: " + e.getMessage());
             }else if(status == 400){
-                throw new IllegalArgumentException("Formato de CEP invalido: " + e.getMessage());
+                throw new CepInvalidoException("Formato de CEP invalido: " + e.getMessage());
             }
             else{
                 throw new RuntimeException("ERRO: " + e.getMessage());

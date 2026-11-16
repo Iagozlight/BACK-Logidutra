@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.exception.ConflitoDeRotaException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import br.com.uniamerica.logidutra.controller.dto.VeiculoRequest;
@@ -16,7 +16,6 @@ import br.com.uniamerica.logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.logidutra.repository.VeiculoRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @AllArgsConstructor
@@ -98,7 +97,7 @@ public class VeiculoService {
 
         if (veiculo.getStatus() == StatusOperacional.EM_ROTA) {
             log.warn("Tentativa de alocar veículo {} que já está em rota", id);
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Veículo já está em rota");
+            throw new ConflitoDeRotaException("Veículo já está em rota");
         }
 
         veiculo.setStatus(StatusOperacional.EM_ROTA);

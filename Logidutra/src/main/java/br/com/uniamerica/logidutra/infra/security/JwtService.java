@@ -30,7 +30,7 @@ public class JwtService {
                     .withIssuer(issuer)
                     .withSubject(usuario.getLogin())
                     .withClaim("id", usuario.getId())
-                    .withClaim("role", usuario.getRole())
+                    .withClaim("role", usuario.getRole().name())
                     .withExpiresAt(Instant.now().plus(8, ChronoUnit.HOURS))
                     .sign(algorithm);
         } catch (JWTCreationException exception) {

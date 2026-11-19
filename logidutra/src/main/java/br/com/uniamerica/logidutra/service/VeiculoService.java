@@ -8,6 +8,7 @@ import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.enums.StatusOperacional;
 import br.com.uniamerica.logidutra.exception.ConflitoDeRotaException;
+import br.com.uniamerica.logidutra.exception.PlacaInvalidaException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ public class VeiculoService {
 
         if (!validarPlaca(veiculoRequest.placa())) {
             log.warn("Placa inválida: {}", veiculoRequest.placa());
-            throw new IllegalArgumentException(PLACA_INVALIDA);
+            throw new PlacaInvalidaException(PLACA_INVALIDA);
         }
 
         VeiculoEntity veiculo = new VeiculoEntity();
@@ -69,7 +70,7 @@ public class VeiculoService {
         veiculo.setMarca(veiculoRequest.marca());
         veiculo.setModelo(veiculoRequest.modelo());
 
-        if (!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException(PLACA_INVALIDA);
+        if (!validarPlaca(veiculoRequest.placa())) throw new PlacaInvalidaException(PLACA_INVALIDA);
         veiculo.setPlaca(veiculoRequest.placa());
 
         return veiculoRepository.save(veiculo);
@@ -84,7 +85,7 @@ public class VeiculoService {
         if (veiculoRequest.modelo() != null) veiculo.setModelo(veiculoRequest.modelo());
         if (veiculoRequest.placa() != null) {
             if (!validarPlaca(veiculoRequest.placa()))
-                throw new IllegalArgumentException(PLACA_INVALIDA);
+                throw new PlacaInvalidaException(PLACA_INVALIDA);
             veiculo.setPlaca(veiculoRequest.placa());
         }
 

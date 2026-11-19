@@ -5,8 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.exception.ConflitoDeRotaException;
+import br.com.uniamerica.logidutra.exception.PlacaInvalidaException;
+import br.com.uniamerica.logidutra.exception.RegistroNaoEncontradoException;
 import br.com.uniamerica.logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,15 +33,17 @@ public class VeiculoController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<VeiculoResponse> salvar(@RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
+    public ResponseEntity<?> salvar(@RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
 
         try {
             Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
             VeiculoEntity veiculo = veiculoService.salvar(veiculoRequest, usuarioLogado);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.CREATED);
 
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (PlacaInvalidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato de placa invalido!");
+        } catch(DataAccessException e){
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Erro ao salvar registro no banco de dados!");
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
@@ -54,79 +60,91 @@ public class VeiculoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VeiculoResponse> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         try {
             VeiculoEntity veiculo = veiculoService.buscarPorId(id);
             return new ResponseEntity<VeiculoResponse>(VeiculoResponse.de(veiculo), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (RegistroNaoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar Veiculo!");
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 
-    @PutMapping
-    public ResponseEntity<VeiculoResponse> atualizarVeiculo(@RequestParam(required = true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizarVeiculo(@PathVariable Long id, @RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
         try {
             Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
             VeiculoEntity veiculo = veiculoService.atualizar(id, veiculoRequest, usuarioLogado);
             return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (PlacaInvalidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato de placa invalido!");
+        } catch (RegistroNaoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar Veiculo!");
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 
-    @PatchMapping
-    public ResponseEntity<VeiculoResponse> atualizarParcialVeiculo(@RequestParam(required = true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
+    @PatchMapping("/{id}")
+    public ResponseEntity<?> atualizarParcialVeiculo(@RequestParam(required = true) Long id, @RequestBody @Valid VeiculoRequest veiculoRequest, @RequestParam Long usuarioLogadoId) {
         try {
             Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
             VeiculoEntity veiculo = veiculoService.atualizarParcial(id, veiculoRequest, usuarioLogado);
             return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (PlacaInvalidaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato de placa invalido!");
+        } catch (RegistroNaoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar Veiculo!");
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 
     @PatchMapping("/{id}/em-rota")
-    public ResponseEntity<VeiculoResponse> marcarEmRota(@PathVariable Long id) {
+    public ResponseEntity<?> marcarEmRota(@PathVariable Long id) {
         try {
             VeiculoEntity veiculo = veiculoService.marcarEmRota(id);
             return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } catch (ResponseStatusException e) {
-            return new ResponseEntity<>(e.getStatusCode());
+        } catch (RegistroNaoEncontradoException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado no banco de dados");
+        } catch(DataAccessException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Erro ao salvar registro no banco de dados!");
+        } catch(ConflitoDeRotaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Usuario já está em Rota!");
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PatchMapping("/{id}/disponivel")
-    public ResponseEntity<VeiculoResponse> marcarDisponivel(@PathVariable Long id) {
+    public ResponseEntity<?> marcarDisponivel(@PathVariable Long id) {
         try {
             VeiculoEntity veiculo = veiculoService.marcarDisponivel(id);
             return new ResponseEntity<>(VeiculoResponse.de(veiculo), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (RegistroNaoEncontradoException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado no banco de dados");
+        } catch(DataAccessException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Erro ao salvar registro no banco de dados!");
+        } catch(ConflitoDeRotaException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Usuario já está em Rota!");
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<VeiculoResponse> deletar(@PathVariable Long id, @RequestParam Long usuarioLogadoId) {
+    public ResponseEntity<?> deletar(@PathVariable Long id, @RequestParam Long usuarioLogadoId) {
         try {
             Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
             veiculoService.deletar(id, usuarioLogado);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch(DataAccessException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Erro ao salvar registro no banco de dados!!");
+        } catch (RegistroNaoEncontradoException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado no banco de dados");
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
 }

@@ -43,7 +43,7 @@ public class ClienteController {
         } catch(DataAccessException e){
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Erro ao salvar registro no banco de dados!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null);
         }
     }
 
@@ -58,7 +58,7 @@ public class ClienteController {
 
             return new ResponseEntity<>(clienteList, HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null);
         }
     }
 
@@ -70,7 +70,7 @@ public class ClienteController {
         } catch(RegistroNaoEncontradoException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar cliente!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null);
         }
     }
 
@@ -87,7 +87,7 @@ public class ClienteController {
         } catch(DataAccessException e){
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Erro ao salvar registro no banco de dados!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null);
         }
     }
 
@@ -104,7 +104,7 @@ public class ClienteController {
         } catch(DataAccessException e){
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Erro ao salvar registro no banco de dados!");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null);
         }
     }
 
@@ -119,7 +119,7 @@ public class ClienteController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Não foi possivel encontrar cliente!");
         }
         catch(Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(null);
         }
     }
 

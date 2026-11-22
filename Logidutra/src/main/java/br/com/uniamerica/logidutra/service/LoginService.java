@@ -19,7 +19,7 @@ public class LoginService {
     }
 
     public String login(LoginRequest data) {
-        if (data.login().isBlank() || data.senha().isBlank()) {
+        if (data == null || data.login().isBlank() || data.senha().isBlank()) {
             throw new IllegalArgumentException("Login e senha não podem ser vazios");
         }
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.senha());

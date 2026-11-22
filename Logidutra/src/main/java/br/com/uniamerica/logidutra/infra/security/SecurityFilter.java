@@ -17,9 +17,11 @@ import java.io.IOException;
 public class SecurityFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UsuarioRepository usuarioRepository;
 
-    public SecurityFilter(JwtService jwtService) {
+    public SecurityFilter(JwtService jwtService, UsuarioRepository usuarioRepository) {
         this.jwtService = jwtService;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (token != null) {
             String login = jwtService.validarToken(token);
             if (login != null) {
-                UserDetails usuario = UsuarioRepository.findByLogin(login).orElse(null);
+                UserDetails usuario = usuarioRepository.findByLogin(login).orElse(null);
                 if (usuario != null) {
                     var authentication = new UsernamePasswordAuthenticationToken(usuario, null, usuario.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);

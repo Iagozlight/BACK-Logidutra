@@ -46,20 +46,20 @@ public class UsuarioService implements UserDetailsService {
         return this.usuarioRepository.save(usuario);
     }
 
-    public Usuario login(String nome, String senha) {
-        String nomeLimpo = nome != null ? nome.trim() : "";
-        Usuario usuario = usuarioRepository.findByNomeIgnoreCase(nomeLimpo);
-        if (usuario == null) {
-            log.warn("Tentativa de login com usuário inexistente: {}", nomeLimpo);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
-        }
-        if (!usuario.getSenha().equals(senha)) {
-            log.warn("Senha incorreta para o usuário: {}", nomeLimpo);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
-        }
-
-        return usuario;
-    }
+//    public Usuario login(String nome, String senha) {
+//        String nomeLimpo = nome != null ? nome.trim() : "";
+//        Usuario usuario = usuarioRepository.findByNomeIgnoreCase(nomeLimpo);
+//        if (usuario == null) {
+//            log.warn("Tentativa de login com usuário inexistente: {}", nomeLimpo);
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
+//        }
+//        if (!usuario.getSenha().equals(senha)) {
+//            log.warn("Senha incorreta para o usuário: {}", nomeLimpo);
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
+//        }
+//
+//        return usuario;
+//    }
 
     @Transactional
     public void redefinirSenha(String nome, String novaSenha) {
@@ -152,7 +152,7 @@ public class UsuarioService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return UsuarioRepository.findByLogin(username)
+        return usuarioRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
 

@@ -1,12 +1,13 @@
 package br.com.uniamerica.logidutra.controller.auth;
 
 import br.com.uniamerica.logidutra.service.LoginService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200")
 public class LoginController {
 
     @Autowired
@@ -17,7 +18,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest loginRequest) {
+    public String login(@RequestBody @Valid LoginRequest loginRequest) {
         if (loginRequest == null) {
             throw new IllegalArgumentException("A solicitação de login não pode ser vazia");
         }

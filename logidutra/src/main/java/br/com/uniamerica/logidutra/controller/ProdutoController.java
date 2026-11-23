@@ -72,9 +72,9 @@ public class ProdutoController {
 
     }
 
-    @PatchMapping("/atualizar")
+    @PatchMapping("/{id}")
     public ResponseEntity<ProdutoResponse> atualizarParcial(
-            @RequestParam() long id, @RequestBody ProdutoRequest produtoRequest){
+            @PathVariable long id, @RequestBody ProdutoRequest produtoRequest){
         try {
             Produto produto = this.produtoService.atualizarParcial(id, produtoRequest);
             return new ResponseEntity<>(ProdutoResponse.de(produto), HttpStatus.OK);

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 @RestController
@@ -47,13 +48,15 @@ public class ProdutoController {
 
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponse> buscarPorId(@PathVariable long id){
         try {
             Produto produto = this.produtoService.buscarPorId(id);
             return new ResponseEntity<>(ProdutoResponse.de(produto), HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

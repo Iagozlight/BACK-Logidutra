@@ -21,7 +21,7 @@ public class ProdutoController {
     @Autowired
     private ProdutoService produtoService;
 
-    @PostMapping("/salvar")
+    @PostMapping
     public ResponseEntity<ProdutoResponse> salvar(@Valid @RequestBody ProdutoRequest produtoRequest){
         try{
             Produto produto = this.produtoService.salvar(produtoRequest);

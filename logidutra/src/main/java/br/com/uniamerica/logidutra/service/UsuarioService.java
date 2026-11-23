@@ -8,6 +8,9 @@ import br.com.uniamerica.logidutra.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UsuarioService {
+public class UsuarioService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
     private final RoleService roleService;
@@ -43,20 +46,20 @@ public class UsuarioService {
         return this.usuarioRepository.save(usuario);
     }
 
-    public Usuario login(String nome, String senha) {
-        String nomeLimpo = nome != null ? nome.trim() : "";
-        Usuario usuario = usuarioRepository.findByNomeIgnoreCase(nomeLimpo);
-        if (usuario == null) {
-            log.warn("Tentativa de login com usuário inexistente: {}", nomeLimpo);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
-        }
-        if (!usuario.getSenha().equals(senha)) {
-            log.warn("Senha incorreta para o usuário: {}", nomeLimpo);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
-        }
-
-        return usuario;
-    }
+//    public Usuario login(String nome, String senha) {
+//        String nomeLimpo = nome != null ? nome.trim() : "";
+//        Usuario usuario = usuarioRepository.findByNomeIgnoreCase(nomeLimpo);
+//        if (usuario == null) {
+//            log.warn("Tentativa de login com usuário inexistente: {}", nomeLimpo);
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado");
+//        }
+//        if (!usuario.getSenha().equals(senha)) {
+//            log.warn("Senha incorreta para o usuário: {}", nomeLimpo);
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Senha incorreta");
+//        }
+//
+//        return usuario;
+//    }
 
     @Transactional
     public void redefinirSenha(String nome, String novaSenha) {
@@ -145,6 +148,12 @@ public class UsuarioService {
         log.info("Usuário {} deletando usuário {}", usuarioLogado.getNome(), id);
         this.buscarPorId(id);
         this.usuarioRepository.deleteById(id);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usuarioRepository.findByLogin(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
     }
 
 }

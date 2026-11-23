@@ -83,7 +83,7 @@ public class ProdutoController {
         }
     }
 
-    @DeleteMapping("/deletar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable long id){
         try {
             this.produtoService.deletarPorID(id);

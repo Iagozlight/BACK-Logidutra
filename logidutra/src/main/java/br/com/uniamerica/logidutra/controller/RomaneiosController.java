@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("api/logidutra/romaneios")
@@ -22,7 +23,7 @@ public class RomaneiosController {
     @Autowired
     private RomaneiosService romaneiosService;
 
-    @PostMapping("/salvar")
+    @PostMapping
     public ResponseEntity<RomaneiosResponse> salvar(@Valid @RequestBody RomaneiosRequest romaneiosRequest){
         try{
             Romaneios romaneios = this.romaneiosService.salvar(romaneiosRequest);
@@ -47,7 +48,7 @@ public class RomaneiosController {
 
     }
 
-    @GetMapping("/buscar/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<RomaneiosResponse> buscarPorId(@PathVariable long id){
         try {
             Romaneios romaneios = this.romaneiosService.buscarPorId(id);
@@ -57,7 +58,7 @@ public class RomaneiosController {
         }
     }
 
-    @PutMapping("/atualizar")
+    @PutMapping("/{id}")
     public ResponseEntity<RomaneiosResponse> atualizar(
             @RequestParam(required = true) long id, @Valid @RequestBody RomaneiosRequest romaneiosRequest) {
         try {
@@ -69,7 +70,7 @@ public class RomaneiosController {
 
     }
 
-    @PatchMapping("/atualizar")
+    @PatchMapping("/{id}")
     public ResponseEntity<RomaneiosResponse> atualizarParcial(
             @RequestParam(required = true) long id, @Valid @RequestBody RomaneiosRequest romaneiosRequest){
         try {
@@ -80,13 +81,15 @@ public class RomaneiosController {
         }
     }
 
-    @DeleteMapping("/deletar/{id}")
-    public ResponseEntity deletar(@PathVariable long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
         try {
             this.romaneiosService.deletarPorID(id);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

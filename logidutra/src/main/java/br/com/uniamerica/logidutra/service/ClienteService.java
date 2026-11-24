@@ -5,12 +5,10 @@ import br.com.uniamerica.logidutra.controller.dto.ViaCepResponse;
 import br.com.uniamerica.logidutra.data.feign.ViaCepClient;
 import br.com.uniamerica.logidutra.entity.ClienteEntity;
 import br.com.uniamerica.logidutra.entity.Usuario;
-import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.repository.ClienteRepository;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +68,7 @@ public class ClienteService {
 
     @Transactional
     public ClienteEntity atualizar(Long id, ClienteRequest clienteRequest, Usuario usuarioLogado) {
-        log.info("Atualizando cliente {}", id);
+        log.info("Usuário {} atualizando cliente {}", usuarioLogado.getNome(), id);
 
         ClienteEntity clienteEntity = buscarPorId(id);
         ViaCepResponse viaCepResponse = consultarCep(clienteRequest.cep());
@@ -88,7 +86,7 @@ public class ClienteService {
 
     @Transactional
     public ClienteEntity atualizarParcial(Long id, ClienteRequest clienteRequest, Usuario usuarioLogado) {
-        log.info("Atualizando parcialmente cliente {}", usuarioLogado.getNome(), id);
+        log.info("Usuário {} atualizando parcialmente cliente {}", usuarioLogado.getNome(), id);
 
         ClienteEntity clienteEntity = this.buscarPorId(id);
 
@@ -107,7 +105,7 @@ public class ClienteService {
 
     @Transactional
     public void deletar(Long id, Usuario usuarioLogado) {
-        log.info("Deletando cliente {}", usuarioLogado.getNome(), id);
+        log.info("Usuário {} deletando cliente {}", usuarioLogado.getNome(), id);
         ClienteEntity clienteEntity = this.buscarPorId(id);
         clienteRepository.delete(clienteEntity);
     }

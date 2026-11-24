@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.uniamerica.logidutra.entity.Usuario;
-import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.enums.StatusOperacional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,13 +34,14 @@ public class VeiculoService {
 
     @Transactional
     public VeiculoEntity salvar(VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-        log.info("Salvando veículo placa {}", veiculoRequest.placa());
+
+        log.info("Usuário {} salvando veículo placa {}", usuarioLogado.getNome(), veiculoRequest.placa());
 
         if (!validarPlaca(veiculoRequest.placa())) {
             log.warn("Placa inválida: {}", veiculoRequest.placa());
             throw new IllegalArgumentException(PLACA_INVALIDA);
         }
+
 
         VeiculoEntity veiculo = new VeiculoEntity();
 
@@ -54,7 +54,10 @@ public class VeiculoService {
     }
 
     public VeiculoEntity buscarPorId(Long id) {
-        return veiculoRepository.findById(id).orElseThrow();
+        return veiculoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Veículo " + id + " não encontrado"));
+
     }
 
     public List<VeiculoEntity> listar() {
@@ -63,7 +66,6 @@ public class VeiculoService {
 
     @Transactional
     public VeiculoEntity atualizar(Long id, VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         VeiculoEntity veiculo = this.buscarPorId(id);
 
         veiculo.setMarca(veiculoRequest.marca());
@@ -77,7 +79,6 @@ public class VeiculoService {
 
     @Transactional
     public VeiculoEntity atualizarParcial(Long id, VeiculoRequest veiculoRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         VeiculoEntity veiculo = this.buscarPorId(id);
 
         if (veiculoRequest.marca() != null) veiculo.setMarca(veiculoRequest.marca());
@@ -115,8 +116,7 @@ public class VeiculoService {
 
     @Transactional
     public void deletar(Long id, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-        log.info("Deletando veículo {}", id);
+        log.info("Usuário {} deletando veículo {}", usuarioLogado.getNome(), id);
         VeiculoEntity veiculo = this.buscarPorId(id);
         veiculoRepository.delete(veiculo);
     }

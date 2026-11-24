@@ -22,8 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 @AllArgsConstructor
 @Slf4j
 public class VeiculoService {
-    private VeiculoRepository veiculoRepository;
-    private final RoleService roleService;
+    private final VeiculoRepository veiculoRepository;
     private static final String PLACA_INVALIDA = "Placa fora do formato esperado";
 
     public boolean validarPlaca(String placa) {

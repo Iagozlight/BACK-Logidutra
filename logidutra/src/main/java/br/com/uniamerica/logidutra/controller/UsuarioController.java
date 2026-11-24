@@ -5,7 +5,6 @@ import br.com.uniamerica.logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,16 +16,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/logidutra/usuario")
-@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://localhost:4200") // Não é necessário pois já está definido o security
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    //Retirado o @Autowired pois isso permite o campo ser final, então a dependencia nunca fica nula nem é reatribuida.
+    private final UsuarioService usuarioService;
+
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @PostMapping
-    public ResponseEntity<?> salvar(@RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
+    @PreAuthorize("hasRole('ADMIN')") //Só o admin pode registrar os casos, porque é ele quem cria os usuários no projeto.
+    public ResponseEntity<?> salvar(@RequestBody @Valid UsuarioRequest usuarioRequest, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
-            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = this.usuarioService.salvar(usuarioRequest, usuarioLogado);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.CREATED);
         } catch (ResponseStatusException e) {
@@ -47,10 +50,11 @@ public class UsuarioController {
 //    }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioResponse>> listar() {
         try {
             List<UsuarioResponse> usuarioList =
-                    this.usuarioService.listar()
+                    usuarioService.listar()
                             .stream()
                             .map(UsuarioResponse::de)
                             .toList();
@@ -62,6 +66,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id") //admin vê qualquer um, o restante so o que tá na máquina deles mesmos
     public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable long id) {
         try {
             Usuario usuario = this.usuarioService.buscarPorId(id);
@@ -77,12 +82,14 @@ public class UsuarioController {
 
 
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioResponse> atualizar(
-            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
+            @RequestParam long id, @RequestBody @Valid UsuarioRequest usuarioRequest, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
-            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = usuarioService.atualizar(id, usuarioRequest, usuarioLogado);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -106,6 +113,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/recuperar-senha")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> redefinirSenha(@RequestParam String nome, @RequestParam String novaSenha) {
         try {
             usuarioService.redefinirSenha(nome, novaSenha);
@@ -118,20 +126,26 @@ public class UsuarioController {
     }
 
     @PatchMapping("/{id}/em-rota")
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<UsuarioResponse> marcarEmRota(@PathVariable long id) {
         try {
             Usuario usuario = usuarioService.marcarEmRota(id);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PatchMapping("/{id}/disponivel")
+    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ResponseEntity<UsuarioResponse> marcarDisponivel(@PathVariable long id) {
         try {
             Usuario usuario = usuarioService.marcarDisponivel(id);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -139,11 +153,12 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletar(@PathVariable long id, @RequestParam Long usuarioLogadoId) {
+    public ResponseEntity<Void> deletar(@PathVariable long id, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
-            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             usuarioService.deletarPorId(id, usuarioLogado);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

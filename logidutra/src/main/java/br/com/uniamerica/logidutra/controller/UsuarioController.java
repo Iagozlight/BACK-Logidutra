@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -89,12 +90,16 @@ public class UsuarioController {
     }
 
     @PatchMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UsuarioResponse> atualizarParcial(
-            @RequestParam(required = true) long id, @RequestBody @Valid UsuarioRequest usuarioRequest, @RequestParam Long usuarioLogadoId) {
+            @RequestParam long id,
+            @RequestBody UsuarioRequest usuarioRequest,
+            @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
-            Usuario usuarioLogado = this.usuarioService.buscarPorId(usuarioLogadoId);
             Usuario usuario = usuarioService.atualizarParcial(id, usuarioRequest, usuarioLogado);
             return new ResponseEntity<>(UsuarioResponse.de(usuario), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

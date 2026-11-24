@@ -2,11 +2,16 @@ package br.com.uniamerica.logidutra.controller.dto;
 
 
 import br.com.uniamerica.logidutra.enums.Role;
+import jakarta.validation.constraints.NotBlank;
 
 public record UsuarioRequest(
+        @NotBlank(message = "Nome obrigatório.")
         String nome,
+        @NotBlank(message = "Senha é obrigatório")
         String senha,
         Integer idade,
+        @NotBlank(message = "O login é obrigatório")
+        String login,
         Role role
 ) {
 

@@ -5,6 +5,7 @@ CREATE TABLE usuarios
     senha  VARCHAR(255) NOT NULL,
     idade  INTEGER,
     role   VARCHAR(20)  NOT NULL,
+    login VARCHAR(255) NOT NULL UNIQUE,
     status VARCHAR(20)
 );
 

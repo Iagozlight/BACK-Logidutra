@@ -4,6 +4,10 @@ import br.com.uniamerica.logidutra.controller.dto.UsuarioRequest;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.exception.ConflitoDeRotaException;
+import br.com.uniamerica.logidutra.exception.RegistroExistenteException;
+import br.com.uniamerica.logidutra.exception.RegistroNaoEncontradoException;
+import br.com.uniamerica.logidutra.exception.UsuarioSemAutorizacaoException;
 import br.com.uniamerica.logidutra.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,7 +34,7 @@ public class UsuarioService implements UserDetailsService {
 
         String nomeLimpo = usuarioRequest.nome().trim();
         if (usuarioRepository.existsByNomeIgnoreCase(nomeLimpo)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com o nome: " + nomeLimpo);
+            throw new RegistroExistenteException("Já existe um usuário com o nome: " + nomeLimpo);
         }
 
         log.info("Usuário {} criando novo usuário: {}", usuarioLogado.getNome(), nomeLimpo);
@@ -66,10 +69,10 @@ public class UsuarioService implements UserDetailsService {
         String nomeLimpo = nome != null ? nome.trim() : "";
         Usuario usuario = usuarioRepository.findByNomeIgnoreCase(nomeLimpo);
         if (usuario == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado.");
+            throw new RegistroNaoEncontradoException( "Usuário não encontrado.");
         }
         if (usuario.getRole() == Role.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Administradores não podem redefinir a senha por este caminho.");
+            throw new UsuarioSemAutorizacaoException("Administradores não podem redefinir a senha por este caminho.");
         }
 
         usuario.setSenha(novaSenha);
@@ -84,11 +87,7 @@ public class UsuarioService implements UserDetailsService {
     }
 
     public Usuario buscarPorId(long id) {
-        return this.usuarioRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                "Usuario " + id + " Não encontrado")
-                );
+        return this.usuarioRepository.findById(id).orElseThrow(() -> new RegistroNaoEncontradoException("Usuario " + id + " Não encontrado"));
     }
 
     @Transactional
@@ -126,7 +125,7 @@ public class UsuarioService implements UserDetailsService {
 
         if (usuario.getStatus() == StatusOperacional.EM_ROTA) {
             log.warn("Tentativa de alocar motorista {} que já está em rota", id);
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Motorista já está em rota");
+            throw new ConflitoDeRotaException("Motorista já está em rota");
         }
 
         usuario.setStatus(StatusOperacional.EM_ROTA);

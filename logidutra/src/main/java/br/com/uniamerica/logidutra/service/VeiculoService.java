@@ -7,8 +7,9 @@ import java.util.regex.Pattern;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.enums.Role;
 import br.com.uniamerica.logidutra.enums.StatusOperacional;
+import br.com.uniamerica.logidutra.exception.ConflitoDeRotaException;
+import br.com.uniamerica.logidutra.exception.PlacaInvalidaException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import br.com.uniamerica.logidutra.controller.dto.VeiculoRequest;
@@ -16,7 +17,6 @@ import br.com.uniamerica.logidutra.entity.VeiculoEntity;
 import br.com.uniamerica.logidutra.repository.VeiculoRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @AllArgsConstructor
@@ -41,7 +41,7 @@ public class VeiculoService {
 
         if (!validarPlaca(veiculoRequest.placa())) {
             log.warn("Placa inválida: {}", veiculoRequest.placa());
-            throw new IllegalArgumentException(PLACA_INVALIDA);
+            throw new PlacaInvalidaException(PLACA_INVALIDA);
         }
 
         VeiculoEntity veiculo = new VeiculoEntity();
@@ -70,7 +70,7 @@ public class VeiculoService {
         veiculo.setMarca(veiculoRequest.marca());
         veiculo.setModelo(veiculoRequest.modelo());
 
-        if (!validarPlaca(veiculoRequest.placa())) throw new IllegalArgumentException(PLACA_INVALIDA);
+        if (!validarPlaca(veiculoRequest.placa())) throw new PlacaInvalidaException(PLACA_INVALIDA);
         veiculo.setPlaca(veiculoRequest.placa());
 
         return veiculoRepository.save(veiculo);
@@ -85,7 +85,7 @@ public class VeiculoService {
         if (veiculoRequest.modelo() != null) veiculo.setModelo(veiculoRequest.modelo());
         if (veiculoRequest.placa() != null) {
             if (!validarPlaca(veiculoRequest.placa()))
-                throw new IllegalArgumentException(PLACA_INVALIDA);
+                throw new PlacaInvalidaException(PLACA_INVALIDA);
             veiculo.setPlaca(veiculoRequest.placa());
         }
 
@@ -98,7 +98,7 @@ public class VeiculoService {
 
         if (veiculo.getStatus() == StatusOperacional.EM_ROTA) {
             log.warn("Tentativa de alocar veículo {} que já está em rota", id);
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Veículo já está em rota");
+            throw new ConflitoDeRotaException("Veículo já está em rota");
         }
 
         veiculo.setStatus(StatusOperacional.EM_ROTA);

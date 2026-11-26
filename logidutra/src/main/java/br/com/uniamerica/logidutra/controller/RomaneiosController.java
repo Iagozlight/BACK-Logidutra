@@ -5,28 +5,35 @@ import br.com.uniamerica.logidutra.controller.dto.RomaneiosResponse;
 import br.com.uniamerica.logidutra.entity.Romaneios;
 import br.com.uniamerica.logidutra.service.RomaneiosService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("api/logidutra/romaneios")
 @Slf4j
-@CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
+//@CrossOrigin(origins = "http://localhost:4200")
 public class RomaneiosController {
 
-    @Autowired
-    private RomaneiosService romaneiosService;
+    private final RomaneiosService romaneiosService;
 
     @PostMapping("/salvar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RomaneiosResponse> salvar(@Valid @RequestBody RomaneiosRequest romaneiosRequest){
         try{
             Romaneios romaneios = this.romaneiosService.salvar(romaneiosRequest);
             return new ResponseEntity<>(RomaneiosResponse.de(romaneios), HttpStatus.CREATED);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -58,6 +65,7 @@ public class RomaneiosController {
     }
 
     @PutMapping("/atualizar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RomaneiosResponse> atualizar(
             @RequestParam(required = true) long id, @Valid @RequestBody RomaneiosRequest romaneiosRequest) {
         try {
@@ -70,6 +78,7 @@ public class RomaneiosController {
     }
 
     @PatchMapping("/atualizar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RomaneiosResponse> atualizarParcial(
             @RequestParam(required = true) long id, @Valid @RequestBody RomaneiosRequest romaneiosRequest){
         try {
@@ -81,6 +90,7 @@ public class RomaneiosController {
     }
 
     @DeleteMapping("/deletar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity deletar(@PathVariable long id){
         try {
             this.romaneiosService.deletarPorID(id);

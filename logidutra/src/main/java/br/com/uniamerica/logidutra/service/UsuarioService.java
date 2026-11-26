@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+import br.com.uniamerica.logidutra.controller.dto.AlterarSenhaRequest;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class UsuarioService implements UserDetailsService {
         usuario.setLogin(loginLimpo);
         usuario.setIdade(usuarioRequest.idade());
         usuario.setRole(usuarioRequest.role());
-        usuario.setSenha(usuarioRequest.senha());
+        usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
         usuario.setStatus(StatusOperacional.DISPONIVEL);
 
         return this.usuarioRepository.save(usuario);
@@ -177,12 +178,27 @@ public class UsuarioService implements UserDetailsService {
         log.info("Usuário {} deletando usuário {}", usuarioLogado.getNome(), id);
         buscarPorId(id);
         usuarioRepository.deleteById(id);
+        if (id == usuarioLogado.getId()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Você não pode excluir a própria conta");
+        }
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return usuarioRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+    }
+
+    @Transactional
+    public void alterarMinhaSenha(Long id, AlterarSenhaRequest request) {
+        Usuario usuario = buscarPorId(id);
+
+        if (!passwordEncoder.matches(request.senhaAtual(), usuario.getSenha())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha atual incorreta");
+        }
+        usuario.setSenha(passwordEncoder.encode(request.novaSenha()));
+        usuarioRepository.save(usuario);
+        log.info("Usuario {} alterou a propria senha", usuario.getLogin());
     }
 
 }

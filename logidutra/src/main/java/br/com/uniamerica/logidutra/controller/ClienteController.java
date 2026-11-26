@@ -5,33 +5,33 @@ import br.com.uniamerica.logidutra.controller.dto.ClienteResponse;
 import br.com.uniamerica.logidutra.entity.ClienteEntity;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.service.ClienteService;
-import br.com.uniamerica.logidutra.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/logidutra/cliente")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
+//@CrossOrigin(origins = "http://localhost:4200")
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
-
-    @Autowired
-    private UsuarioService usuarioService;
+    private final ClienteService clienteService;
 
     @PostMapping
-    public ResponseEntity<ClienteResponse> salvar(@RequestBody @Valid ClienteRequest clienteRequest, @RequestParam Long usuarioLogadoId) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ClienteResponse> salvar(@RequestBody @Valid ClienteRequest clienteRequest, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
-            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
-            ClienteEntity clienteEntity = clienteService.salvar(clienteRequest, usuarioLogado);
-            return new ResponseEntity<>(ClienteResponse.de(clienteEntity), HttpStatus.CREATED);
+            ClienteEntity cliente = clienteService.salvar(clienteRequest, usuarioLogado);
+            return new ResponseEntity<>(ClienteResponse.de(cliente), HttpStatus.CREATED);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -40,13 +40,11 @@ public class ClienteController {
     @GetMapping
     public ResponseEntity<List<ClienteResponse>> listar() {
         try {
-            List<ClienteResponse> clienteList =
-                    clienteService.listar()
-                            .stream()
-                            .map(ClienteResponse::de)
-                            .toList();
-
-            return new ResponseEntity<>(clienteList, HttpStatus.OK);
+            List<ClienteResponse> lista = clienteService.listar()
+                    .stream()
+                    .map(ClienteResponse::de)
+                    .toList();
+            return new ResponseEntity<>(lista, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -55,54 +53,53 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<ClienteResponse> buscarPorId(@PathVariable Long id) {
         try {
-            ClienteEntity clienteEntity = clienteService.buscarPorId(id);
-            return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);
-        } catch(NoSuchElementException e){
-            return new ResponseEntity<ClienteResponse>(HttpStatus.NOT_FOUND);
+            ClienteEntity cliente = clienteService.buscarPorId(id);
+            return new ResponseEntity<>(ClienteResponse.de(cliente), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
-            return new ResponseEntity<ClienteResponse>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping
-    public ResponseEntity<ClienteResponse> atualizar(@RequestParam(required=true) Long id, @RequestBody @Valid ClienteRequest clienteRequest, @RequestParam Long usuarioLogadoId) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ClienteResponse> atualizar(@RequestParam Long id, @RequestBody @Valid ClienteRequest clienteRequest, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
-            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
-            ClienteEntity clienteEntity = clienteService.atualizar(id, clienteRequest, usuarioLogado);
-            return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);
-        } catch(NoSuchElementException e){
-            return new ResponseEntity<ClienteResponse>(HttpStatus.NO_CONTENT);
+            ClienteEntity cliente = clienteService.atualizar(id, clienteRequest, usuarioLogado);
+            return new ResponseEntity<>(ClienteResponse.de(cliente), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
-            return new ResponseEntity<ClienteResponse>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @PatchMapping
-    public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam(required = true) Long id, @RequestBody @Valid ClienteRequest clienteRequest, @RequestParam Long usuarioLogadoId) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ClienteResponse> atualizarParcial(@RequestParam Long id, @RequestBody ClienteRequest clienteRequest, @AuthenticationPrincipal Usuario usuarioLogado) {
         try {
-            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
-            ClienteEntity clienteEntity = clienteService.atualizarParcial(id, clienteRequest, usuarioLogado);
-            return new ResponseEntity<ClienteResponse>(ClienteResponse.de(clienteEntity), HttpStatus.OK);
-        } catch(NoSuchElementException e){
-            return new ResponseEntity<ClienteResponse>(HttpStatus.NOT_FOUND);
-        } catch(Exception e){
-            return new ResponseEntity<ClienteResponse>(HttpStatus.BAD_REQUEST);
+            ClienteEntity cliente = clienteService.atualizarParcial(id, clienteRequest, usuarioLogado);
+            return new ResponseEntity<>(ClienteResponse.de(cliente), HttpStatus.OK);
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id, @RequestParam Long usuarioLogadoId) {
-        try{
-            Usuario usuarioLogado = usuarioService.buscarPorId(usuarioLogadoId);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deletar(@PathVariable Long id, @AuthenticationPrincipal Usuario usuarioLogado) {
+        try {
             clienteService.deletar(id, usuarioLogado);
             return new ResponseEntity<>(HttpStatus.OK);
-        }
-        catch(NoSuchElementException e){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        catch(Exception e){
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+
     }
 
 }

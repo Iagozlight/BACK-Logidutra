@@ -1,6 +1,7 @@
 package br.com.uniamerica.logidutra.controller;
 
 import br.com.uniamerica.logidutra.controller.dto.UsuarioRequest;
+import br.com.uniamerica.logidutra.controller.dto.AlterarSenhaRequest;
 import br.com.uniamerica.logidutra.controller.dto.UsuarioResponse;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.service.UsuarioService;
@@ -50,7 +51,6 @@ public class UsuarioController {
 //    }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioResponse>> listar() {
         try {
             List<UsuarioResponse> usuarioList =
@@ -66,7 +66,6 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or #id == principal.id") //admin vê qualquer um, o restante so o que tá na máquina deles mesmos
     public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable long id) {
         try {
             Usuario usuario = this.usuarioService.buscarPorId(id);
@@ -109,6 +108,16 @@ public class UsuarioController {
             return new ResponseEntity<>(e.getStatusCode());
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping("/minha-senha")
+    public ResponseEntity<?> alterarMinhaSenha(@RequestBody @Valid AlterarSenhaRequest request, @AuthenticationPrincipal Usuario usuarioLogado) {
+        try {
+            usuarioService.alterarMinhaSenha(usuarioLogado.getId(), request);
+            return ResponseEntity.ok().build();
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
         }
     }
 

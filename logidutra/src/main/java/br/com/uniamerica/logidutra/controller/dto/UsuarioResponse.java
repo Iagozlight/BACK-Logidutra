@@ -16,7 +16,6 @@ public record UsuarioResponse(
         String nome,
         @NotNull
         Integer idade,
-        String login,
         Role role,
         StatusOperacional status
 ) {
@@ -27,7 +26,6 @@ public record UsuarioResponse(
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getIdade(),
-                usuario.getLogin(),
                 usuario.getRole(),
                 usuario.getStatus()
         );

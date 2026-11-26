@@ -5,14 +5,20 @@ import br.com.uniamerica.logidutra.controller.dto.ViaCepResponse;
 import br.com.uniamerica.logidutra.data.feign.ViaCepClient;
 import br.com.uniamerica.logidutra.entity.ClienteEntity;
 import br.com.uniamerica.logidutra.entity.Usuario;
+import br.com.uniamerica.logidutra.enums.Role;
+import br.com.uniamerica.logidutra.exception.ApiExternaIndisponivelException;
+import br.com.uniamerica.logidutra.exception.CepInvalidoException;
+import br.com.uniamerica.logidutra.exception.CepNaoEncontradoException;
+import br.com.uniamerica.logidutra.exception.RegistroNaoEncontradoException;
 import br.com.uniamerica.logidutra.repository.ClienteRepository;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -26,12 +32,32 @@ public class ClienteService {
 
 
     private ViaCepResponse consultarCep(String cep) {
+        if (cep == null || cep.isBlank()){
+            throw new IllegalArgumentException("Cep não pode ser nulo ou String vazia!");
+        }
+
         log.info("Consultando CEP {} na ViaCEP", cep);
-        ViaCepResponse viaCepResponse = viaCepClient.buscarPorCep(cep);
+
+        ViaCepResponse viaCepResponse;
+        try{
+            viaCepResponse = viaCepClient.buscarPorCep(cep);
+        }catch(FeignException e){
+            int status = e.status();
+            if(status == 500 || status == 501 || status == 502 || status == 503 || status == 504){
+                log.error("Erro de comunicação com o ViaCep: {}", e.getMessage());
+                throw new ApiExternaIndisponivelException("Erro de comunicação com o ViaCep: " + e.getMessage());
+            }else if(status == 400){
+                throw new CepInvalidoException("Formato de CEP invalido: " + e.getMessage());
+            }
+            else{
+                throw new RuntimeException("ERRO: " + e.getMessage());
+            }
+            
+        }
 
         if (viaCepResponse == null || Boolean.TRUE.equals(viaCepResponse.erro())) {
             log.warn("CEP {} não encontrado na ViaCEP", cep);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "CEP não encontrado: " + cep);
+            throw new CepNaoEncontradoException("CEP não encontrado:" + cep);
         }
         return viaCepResponse;
     }
@@ -50,7 +76,6 @@ public class ClienteService {
         clienteEntity.setLogradouro(viaCepResponse.logradouro());
         clienteEntity.setBairro(viaCepResponse.bairro());
         clienteEntity.setCidade(viaCepResponse.cidade());
-
         ClienteEntity salvo = clienteRepository.save(clienteEntity);
         log.info("Cliente {} salvo com id {}", salvo.getNome(), salvo.getId());
         return salvo;
@@ -61,9 +86,7 @@ public class ClienteService {
     }
 
     public ClienteEntity buscarPorId(Long id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Cliente " + id + " não encontrado"));
+        return clienteRepository.findById(id).orElseThrow(() -> new RegistroNaoEncontradoException("Não foi possivel encontrar cliente com ID: " + id));
     }
 
     @Transactional

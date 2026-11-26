@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"senha", "romaneiosComoMotorista"}) //o ToString agora não vaza os dados.
 @Table(name = "usuarios")
 public class Usuario implements UserDetails {
     @Id
@@ -35,9 +34,10 @@ public class Usuario implements UserDetails {
     private Integer idade;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(name = "login", nullable = false)
+    @Column(name = "login", nullable = false, unique = true)
     private String login;
 
     @Enumerated(EnumType.STRING)
@@ -49,9 +49,7 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        ArrayList<SimpleGrantedAuthority> grantAutority = new ArrayList<>();
-        grantAutority.add(new SimpleGrantedAuthority(role.name()));
-        return grantAutority;
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
 
     @Override

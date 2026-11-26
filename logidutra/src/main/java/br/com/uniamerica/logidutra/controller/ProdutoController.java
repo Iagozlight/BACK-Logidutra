@@ -5,28 +5,33 @@ import br.com.uniamerica.logidutra.controller.dto.ProdutoResponse;
 import br.com.uniamerica.logidutra.entity.Produto;
 import br.com.uniamerica.logidutra.service.ProdutoService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/api/logidutra/produto")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequiredArgsConstructor
+//@CrossOrigin(origins = "http://localhost:4200")
 public class ProdutoController {
 
-    @Autowired
-    private ProdutoService produtoService;
+    private final ProdutoService produtoService;
 
     @PostMapping("/salvar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProdutoResponse> salvar(@Valid @RequestBody ProdutoRequest produtoRequest){
         try{
             Produto produto = this.produtoService.salvar(produtoRequest);
             return new ResponseEntity<>(ProdutoResponse.de(produto), HttpStatus.CREATED);
-        }catch (Exception e) {
+        } catch (ResponseStatusException e) {
+            return new ResponseEntity<>(e.getStatusCode());
+        } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
@@ -58,6 +63,7 @@ public class ProdutoController {
     }
 
     @PutMapping("/atualizar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProdutoResponse> atualizar(
             @RequestParam() long id, @RequestBody ProdutoRequest produtoRequest) {
         try {
@@ -70,6 +76,7 @@ public class ProdutoController {
     }
 
     @PatchMapping("/atualizar")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProdutoResponse> atualizarParcial(
             @RequestParam() long id, @RequestBody ProdutoRequest produtoRequest){
         try {
@@ -81,6 +88,7 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/deletar/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletar(@PathVariable long id){
         try {
             this.produtoService.deletarPorID(id);

@@ -1,6 +1,7 @@
 package br.com.uniamerica.logidutra.service;
 
 import br.com.uniamerica.logidutra.controller.auth.LoginRequest;
+import br.com.uniamerica.logidutra.controller.auth.LoginResponse;
 import br.com.uniamerica.logidutra.entity.Usuario;
 import br.com.uniamerica.logidutra.infra.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,14 +19,12 @@ public class LoginService {
         this.jwtService = jwtService;
     }
 
-    public String login(LoginRequest data) {
-        if (data == null || data.login().isBlank() || data.senha().isBlank()) {
-            throw new IllegalArgumentException("Login e senha não podem ser vazios");
-        }
-        var usernamePassword = new UsernamePasswordAuthenticationToken(data.login(), data.senha());
-        var authentication = authenticationManager.authenticate(usernamePassword);
+    public LoginResponse login(LoginRequest data) { //Agora ele salva o Token
+        var credenciais = new UsernamePasswordAuthenticationToken(data.login(), data.senha());
+        var authentication = authenticationManager.authenticate(credenciais);
         var usuario = (Usuario) authentication.getPrincipal();
 
-        return jwtService.gerarToken(usuario);
+        String token = jwtService.gerarToken(usuario);
+        return new LoginResponse(token, usuario.getId(), usuario.getNome(), usuario.getRole());
     }
 }

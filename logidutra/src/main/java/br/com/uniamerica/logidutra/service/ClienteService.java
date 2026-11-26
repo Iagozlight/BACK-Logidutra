@@ -15,6 +15,7 @@ import feign.FeignException;
 import lombok.AllArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +27,8 @@ import java.util.List;
 @Slf4j
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
-
+    private final ClienteRepository clienteRepository;
     private final ViaCepClient viaCepClient;
-    private final RoleService roleService;
 
 
     private ViaCepResponse consultarCep(String cep) {
@@ -61,19 +59,16 @@ public class ClienteService {
             log.warn("CEP {} não encontrado na ViaCEP", cep);
             throw new CepNaoEncontradoException("CEP não encontrado:" + cep);
         }
-
         return viaCepResponse;
     }
 
     @Transactional
     public ClienteEntity salvar(ClienteRequest clienteRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-        log.info("Salvando cliente ID: {}", clienteRequest.nome());
+        log.info("Usuário {} salvando cliente: {}", usuarioLogado.getNome(), clienteRequest.nome());
 
         ViaCepResponse viaCepResponse = consultarCep(clienteRequest.cep());
 
         ClienteEntity clienteEntity = new ClienteEntity();
-
         clienteEntity.setNome(clienteRequest.nome());
         clienteEntity.setCpf(clienteRequest.cpf());
         clienteEntity.setTelefone(clienteRequest.telefone());
@@ -96,10 +91,9 @@ public class ClienteService {
 
     @Transactional
     public ClienteEntity atualizar(Long id, ClienteRequest clienteRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-        log.info("Atualizando cliente {}", id);
+        log.info("Usuário {} atualizando cliente {}", usuarioLogado.getNome(), id);
 
-        ClienteEntity clienteEntity = this.buscarPorId(id);
+        ClienteEntity clienteEntity = buscarPorId(id);
         ViaCepResponse viaCepResponse = consultarCep(clienteRequest.cep());
 
         clienteEntity.setNome(clienteRequest.nome());
@@ -115,8 +109,7 @@ public class ClienteService {
 
     @Transactional
     public ClienteEntity atualizarParcial(Long id, ClienteRequest clienteRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-        log.info("Atualizando parcialmente cliente {}", id);
+        log.info("Usuário {} atualizando parcialmente cliente {}", usuarioLogado.getNome(), id);
 
         ClienteEntity clienteEntity = this.buscarPorId(id);
 
@@ -130,14 +123,12 @@ public class ClienteService {
             clienteEntity.setBairro(endereco.bairro());
             clienteEntity.setCidade(endereco.cidade());
         }
-
         return clienteRepository.save(clienteEntity);
     }
 
     @Transactional
     public void deletar(Long id, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-        log.info("Deletando cliente {}", id);
+        log.info("Usuário {} deletando cliente {}", usuarioLogado.getNome(), id);
         ClienteEntity clienteEntity = this.buscarPorId(id);
         clienteRepository.delete(clienteEntity);
     }

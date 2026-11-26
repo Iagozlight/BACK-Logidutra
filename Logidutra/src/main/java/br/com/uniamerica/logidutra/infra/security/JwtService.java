@@ -18,7 +18,7 @@ public class JwtService {
     private final String issuer;
 
     public JwtService(
-            @Value("${api.security.token.secret:minha-secret-default}") String secret,
+            @Value("${api.security.token.secret}") String secret,
             @Value("${api.security.token.issuer:minha-aplicacao}") String issuer) {
         this.algorithm = Algorithm.HMAC256(secret);
         this.issuer = issuer;

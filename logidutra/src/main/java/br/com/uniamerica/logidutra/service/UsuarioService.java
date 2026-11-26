@@ -15,8 +15,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+import br.com.uniamerica.logidutra.controller.dto.AlterarSenhaRequest;
 
 import java.util.List;
 
@@ -26,24 +29,28 @@ import java.util.List;
 public class UsuarioService implements UserDetailsService {
 
     private final UsuarioRepository usuarioRepository;
-    private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Usuario salvar(UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
-
         String nomeLimpo = usuarioRequest.nome().trim();
+        String loginLimpo = usuarioRequest.login().trim();
+
         if (usuarioRepository.existsByNomeIgnoreCase(nomeLimpo)) {
             throw new RegistroExistenteException("Já existe um usuário com o nome: " + nomeLimpo);
+        }
+        if (usuarioRepository.existsByLogin(loginLimpo)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com o login: " + loginLimpo);
         }
 
         log.info("Usuário {} criando novo usuário: {}", usuarioLogado.getNome(), nomeLimpo);
 
         Usuario usuario = new Usuario();
         usuario.setNome(nomeLimpo);
+        usuario.setLogin(loginLimpo);
         usuario.setIdade(usuarioRequest.idade());
         usuario.setRole(usuarioRequest.role());
-        usuario.setSenha(usuarioRequest.senha());
+        usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
         usuario.setStatus(StatusOperacional.DISPONIVEL);
 
         return this.usuarioRepository.save(usuario);
@@ -75,11 +82,10 @@ public class UsuarioService implements UserDetailsService {
             throw new UsuarioSemAutorizacaoException("Administradores não podem redefinir a senha por este caminho.");
         }
 
-        usuario.setSenha(novaSenha);
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
         usuarioRepository.save(usuario);
         log.info("Senha redefinida com sucesso para o usuário: {}", nomeLimpo);
     }
-
 
 
     public List<Usuario> listar() {
@@ -92,31 +98,57 @@ public class UsuarioService implements UserDetailsService {
 
     @Transactional
     public Usuario atualizar(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
+        Usuario usuario = buscarPorId(id);
 
-        Usuario usuario1 = this.buscarPorId(id);
+        String nomeLimpo = usuarioRequest.nome().trim();
+        String loginLimpo = usuarioRequest.login().trim();
 
-        usuario1.setNome(usuarioRequest.nome());
-        usuario1.setSenha(usuarioRequest.senha());
-        usuario1.setIdade(usuarioRequest.idade());
-        usuario1.setRole(usuarioRequest.role());
+        if (usuarioRepository.existsByNomeIgnoreCaseAndIdNot(nomeLimpo, id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com o nome: " + nomeLimpo);
+        }
+        if (usuarioRepository.existsByLoginAndIdNot(loginLimpo, id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com o login: " + loginLimpo);
+        }
 
-        return this.usuarioRepository.save(usuario1);
+        log.info("Usuário {} atualizando usuário {}", usuarioLogado.getNome(), id);
+
+        usuario.setNome(nomeLimpo);
+        usuario.setLogin(loginLimpo);
+        usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
+        usuario.setIdade(usuarioRequest.idade());
+        usuario.setRole(usuarioRequest.role());
+
+        return usuarioRepository.save(usuario);
+
     }
 
     @Transactional
     public Usuario atualizarParcial(long id, UsuarioRequest usuarioRequest, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
+        Usuario usuario = buscarPorId(id);
 
-        Usuario usuario = this.buscarPorId(id);
+        log.info("Usuário {} atualizando parcialmente o usuário {}", usuarioLogado.getNome(), id);
 
-        if (usuarioRequest.nome() != null) usuario.setNome(usuarioRequest.nome());
-        if (usuarioRequest.senha() != null) usuario.setSenha(usuarioRequest.senha());
+        if (usuarioRequest.nome() != null && !usuarioRequest.nome().isBlank()) {
+            String nomeLimpo = usuarioRequest.nome().trim();
+            if (usuarioRepository.existsByNomeIgnoreCaseAndIdNot(nomeLimpo, id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com o nome: " + nomeLimpo);
+            }
+            usuario.setNome(nomeLimpo);
+        }
+        if (usuarioRequest.login() != null && !usuarioRequest.login().isBlank()) {
+            String loginLimpo = usuarioRequest.login().trim();
+            if (usuarioRepository.existsByLoginAndIdNot(loginLimpo, id)) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um usuário com o login: " + loginLimpo);
+            }
+            usuario.setLogin(loginLimpo);
+        }
+        if (usuarioRequest.senha() != null && !usuarioRequest.senha().isBlank()) {
+            usuario.setSenha(passwordEncoder.encode(usuarioRequest.senha()));
+        }
         if (usuarioRequest.idade() != null) usuario.setIdade(usuarioRequest.idade());
         if (usuarioRequest.role() != null) usuario.setRole(usuarioRequest.role());
 
-        return this.usuarioRepository.save(usuario);
-
+        return usuarioRepository.save(usuario);
     }
 
     @Transactional
@@ -143,16 +175,30 @@ public class UsuarioService implements UserDetailsService {
 
     @Transactional
     public void deletarPorId(long id, Usuario usuarioLogado) {
-        roleService.validarRole(usuarioLogado.getId(), Role.ADMIN);
         log.info("Usuário {} deletando usuário {}", usuarioLogado.getNome(), id);
-        this.buscarPorId(id);
-        this.usuarioRepository.deleteById(id);
+        buscarPorId(id);
+        usuarioRepository.deleteById(id);
+        if (id == usuarioLogado.getId()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Você não pode excluir a própria conta");
+        }
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return usuarioRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+    }
+
+    @Transactional
+    public void alterarMinhaSenha(Long id, AlterarSenhaRequest request) {
+        Usuario usuario = buscarPorId(id);
+
+        if (!passwordEncoder.matches(request.senhaAtual(), usuario.getSenha())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Senha atual incorreta");
+        }
+        usuario.setSenha(passwordEncoder.encode(request.novaSenha()));
+        usuarioRepository.save(usuario);
+        log.info("Usuario {} alterou a propria senha", usuario.getLogin());
     }
 
 }
